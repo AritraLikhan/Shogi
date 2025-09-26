@@ -1,1 +1,6 @@
-python launch_shogi.py
+>> git clone https://github.com/AritraLikhan/Shogi.git
+>> cd python-shogi
+>> python -m venv venv
+>> .\venv\Scripts\activate
+>> pip install python-shogi
+>> python launch_shogi.py
