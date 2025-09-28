@@ -8,6 +8,8 @@ Uses Unicode symbols for better piece representation and includes more game feat
 import tkinter as tk
 from tkinter import ttk, messagebox, font
 import shogi
+from shogi_ai import ShogiAI
+import threading
 
 class EnhancedShogiGUI:
     def __init__(self, root):
@@ -23,6 +25,12 @@ class EnhancedShogiGUI:
         self.move_history = []
         self.highlighted_moves = []
         self.use_japanese = True  # Language setting: True for Japanese, False for English
+        
+        # AI and game mode settings
+        self.game_mode = "human_vs_ai"  # "human_vs_human" or "human_vs_ai"
+        self.ai = ShogiAI(depth=3, time_limit=3.0)
+        self.ai_thinking = False
+        self.user_color = shogi.BLACK  # User plays as black (先手)
         
         # Piece symbols for both languages
         self.japanese_piece_symbols = {
@@ -95,6 +103,14 @@ class EnhancedShogiGUI:
         )
         self.turn_label.pack(side=tk.LEFT)
         
+        self.ai_thinking_label = ttk.Label(
+            info_frame, 
+            text="", 
+            font=('Arial', 12, 'italic'),
+            foreground='#ff9800'
+        )
+        self.ai_thinking_label.pack(side=tk.LEFT, padx=(20, 0))
+        
         self.move_label = ttk.Label(
             info_frame, 
             text="Move: 1", 
@@ -144,6 +160,31 @@ class EnhancedShogiGUI:
         right_panel = ttk.Frame(main_container, width=300)
         right_panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(20, 0))
         right_panel.pack_propagate(False)
+        
+        # Game mode controls
+        mode_frame = ttk.LabelFrame(right_panel, text="Game Mode", padding=10)
+        mode_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        self.mode_var = tk.StringVar(value="human_vs_ai")
+        ttk.Radiobutton(mode_frame, text="Human vs AI", variable=self.mode_var, 
+                       value="human_vs_ai", command=self.change_game_mode).pack(anchor=tk.W)
+        ttk.Radiobutton(mode_frame, text="Human vs Human", variable=self.mode_var, 
+                       value="human_vs_human", command=self.change_game_mode).pack(anchor=tk.W)
+        
+        # AI difficulty controls
+        ai_frame = ttk.LabelFrame(right_panel, text="AI Difficulty", padding=10)
+        ai_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        self.difficulty_var = tk.StringVar(value="medium")
+        difficulty_frame = ttk.Frame(ai_frame)
+        difficulty_frame.pack(fill=tk.X)
+        
+        ttk.Label(difficulty_frame, text="Level:").pack(side=tk.LEFT)
+        difficulty_combo = ttk.Combobox(difficulty_frame, textvariable=self.difficulty_var, 
+                                       values=["easy", "medium", "hard", "expert"], 
+                                       state="readonly", width=10)
+        difficulty_combo.pack(side=tk.LEFT, padx=(5, 0))
+        difficulty_combo.bind("<<ComboboxSelected>>", self.change_ai_difficulty)
         
         # Game controls
         controls_frame = ttk.LabelFrame(right_panel, text="Game Controls", padding=10)
@@ -226,7 +267,14 @@ Promoted pieces: + prefix in English"""
     def update_display(self):
         """Update the visual display of the board"""
         # Update turn and move labels
-        turn_text = "Turn: Black (先手)" if self.board.turn == shogi.BLACK else "Turn: White (後手)"
+        if self.game_mode == "human_vs_ai":
+            if self.board.turn == self.user_color:
+                turn_text = f"Your turn ({'Black (先手)' if self.user_color == shogi.BLACK else 'White (後手)'})"
+            else:
+                turn_text = f"AI turn ({'Black (先手)' if self.board.turn == shogi.BLACK else 'White (後手)'})"
+        else:
+            turn_text = "Turn: Black (先手)" if self.board.turn == shogi.BLACK else "Turn: White (後手)"
+        
         self.turn_label.config(text=turn_text)
         self.move_label.config(text=f"Move: {self.board.move_number}")
         
@@ -298,6 +346,14 @@ Promoted pieces: + prefix in English"""
     
     def on_square_click(self, row, col):
         """Handle square click for move selection"""
+        # Don't allow moves if AI is thinking
+        if self.ai_thinking:
+            return
+            
+        # In AI mode, only allow user to move on their turn
+        if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
+            return
+            
         square = self.get_square_from_coords(row, col)
         piece = self.board.piece_at(square)
         
@@ -349,6 +405,11 @@ Promoted pieces: + prefix in English"""
             self.move_history.append(move)
             self.log_move(move)
             self.clear_selection()
+            self.update_display()
+            
+            # Trigger AI move if in AI mode and it's AI's turn
+            if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
+                self.make_ai_move()
         else:
             # Try promotion
             move = shogi.Move(from_square, to_square, promotion=True)
@@ -357,12 +418,25 @@ Promoted pieces: + prefix in English"""
                 self.move_history.append(move)
                 self.log_move(move)
                 self.clear_selection()
+                self.update_display()
+                
+                # Trigger AI move if in AI mode and it's AI's turn
+                if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
+                    self.make_ai_move()
             else:
                 messagebox.showwarning("Invalid Move", f"Invalid move: {move.usi()}")
                 self.clear_selection()
     
     def play_manual_move(self):
         """Play a move entered manually in USI format"""
+        # Don't allow manual moves if AI is thinking
+        if self.ai_thinking:
+            return
+            
+        # In AI mode, only allow user to move on their turn
+        if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
+            return
+            
         move_text = self.move_entry.get().strip()
         if not move_text:
             return
@@ -376,6 +450,10 @@ Promoted pieces: + prefix in English"""
                 self.move_entry.delete(0, tk.END)
                 self.clear_selection()
                 self.update_display()
+                
+                # Trigger AI move if in AI mode and it's AI's turn
+                if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
+                    self.make_ai_move()
             else:
                 messagebox.showwarning("Invalid Move", f"Invalid move: {move_text}")
         except Exception as e:
@@ -390,9 +468,18 @@ Promoted pieces: + prefix in English"""
         self.board = shogi.Board()
         self.move_history = []
         self.clear_selection()
+        self.ai_thinking = False
+        self.ai_thinking_label.config(text="")
         self.status_text.delete(1.0, tk.END)
         self.update_display()
-        self.log_message("🎮 New game started!")
+        
+        if self.game_mode == "human_vs_ai":
+            self.log_message("🎮 New game started! Human vs AI")
+            # If AI goes first, make its move
+            if self.board.turn != self.user_color:
+                self.make_ai_move()
+        else:
+            self.log_message("🎮 New game started! Human vs Human")
     
     def undo_move(self):
         """Undo the last move"""
@@ -530,6 +617,71 @@ Promoted pieces: + prefix in English"""
         self.update_display()
         language = "Japanese" if self.use_japanese else "English"
         self.log_message(f"🌐 Switched to {language} display")
+    
+    def change_game_mode(self):
+        """Change between human vs human and human vs AI modes"""
+        self.game_mode = self.mode_var.get()
+        if self.game_mode == "human_vs_ai":
+            self.log_message("🤖 Switched to Human vs AI mode")
+        else:
+            self.log_message("👥 Switched to Human vs Human mode")
+        self.update_display()
+    
+    def change_ai_difficulty(self, event=None):
+        """Change AI difficulty level"""
+        difficulty = self.difficulty_var.get()
+        self.ai.set_difficulty(difficulty)
+        self.log_message(f"🎯 AI difficulty set to {difficulty}")
+    
+    def make_ai_move(self):
+        """Make an AI move in a separate thread"""
+        if self.ai_thinking or self.board.is_game_over():
+            return
+            
+        self.ai_thinking = True
+        self.ai_thinking_label.config(text="🤖 AI thinking...")
+        self.update_display()
+        
+        # Run AI move in a separate thread to prevent GUI freezing
+        def ai_move_thread():
+            try:
+                ai_move = self.ai.get_best_move(self.board)
+                if ai_move and ai_move in self.board.legal_moves:
+                    # Schedule the move on the main thread
+                    self.root.after(0, self.execute_ai_move, ai_move)
+                else:
+                    # No valid move found
+                    self.root.after(0, self.ai_move_failed)
+            except Exception as e:
+                self.root.after(0, self.ai_move_error, str(e))
+        
+        thread = threading.Thread(target=ai_move_thread)
+        thread.daemon = True
+        thread.start()
+    
+    def execute_ai_move(self, move):
+        """Execute the AI move on the main thread"""
+        self.board.push(move)
+        self.move_history.append(move)
+        self.log_move(move)
+        self.ai_thinking = False
+        self.ai_thinking_label.config(text="")
+        self.clear_selection()
+        self.update_display()
+    
+    def ai_move_failed(self):
+        """Handle AI move failure"""
+        self.ai_thinking = False
+        self.ai_thinking_label.config(text="")
+        self.log_message("❌ AI could not find a valid move")
+        self.update_display()
+    
+    def ai_move_error(self, error_msg):
+        """Handle AI move error"""
+        self.ai_thinking = False
+        self.ai_thinking_label.config(text="")
+        self.log_message(f"❌ AI error: {error_msg}")
+        self.update_display()
 
 def main():
     root = tk.Tk()
