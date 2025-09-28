@@ -14,7 +14,7 @@ def main():
     board = shogi.Board()
     
     print("Initial position:")
-    print(board)
+    print(board.kif_str())
     print(f"Current turn: {'Black' if board.turn == shogi.BLACK else 'White'}")
     print(f"Move number: {board.move_number}")
     print()

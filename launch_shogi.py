@@ -12,32 +12,27 @@ def main():
     print("=== Python Shogi Game Launcher ===\n")
     print("Choose your preferred interface:")
     print("1. Console version (text-based)")
-    print("2. Basic GUI version (tkinter)")
-    print("3. Enhanced GUI version (with better graphics)")
-    print("4. Exit")
+    print("2. Enhanced GUI version (with graphics)")
+    print("3. Exit")
     print()
     
     while True:
         try:
-            choice = input("Enter your choice (1-4): ").strip()
+            choice = input("Enter your choice (1-3): ").strip()
             
             if choice == '1':
                 print("\nStarting console version...")
                 os.system("python example_game.py")
                 break
             elif choice == '2':
-                print("\nStarting basic GUI version...")
-                os.system("python shogi_gui.py")
-                break
-            elif choice == '3':
                 print("\nStarting enhanced GUI version...")
                 os.system("python shogi_gui_enhanced.py")
                 break
-            elif choice == '4':
+            elif choice == '3':
                 print("Goodbye!")
                 break
             else:
-                print("Invalid choice. Please enter 1, 2, 3, or 4.")
+                print("Invalid choice. Please enter 1, 2 or 3.")
         except KeyboardInterrupt:
             print("\nGoodbye!")
             break

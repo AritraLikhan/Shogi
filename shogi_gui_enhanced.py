@@ -22,15 +22,25 @@ class EnhancedShogiGUI:
         self.selected_piece = None
         self.move_history = []
         self.highlighted_moves = []
+        self.use_japanese = True  # Language setting: True for Japanese, False for English
         
-        # Unicode piece symbols (better representation)
-        self.piece_symbols = {
+        # Piece symbols for both languages
+        self.japanese_piece_symbols = {
             shogi.PAWN: '歩', shogi.LANCE: '香', shogi.KNIGHT: '桂', 
             shogi.SILVER: '銀', shogi.GOLD: '金', shogi.BISHOP: '角', 
             shogi.ROOK: '飛', shogi.KING: '王',
             shogi.PROM_PAWN: 'と', shogi.PROM_LANCE: '杏', 
             shogi.PROM_KNIGHT: '圭', shogi.PROM_SILVER: '全',
             shogi.PROM_BISHOP: '馬', shogi.PROM_ROOK: '龍'
+        }
+        
+        self.english_piece_symbols = {
+            shogi.PAWN: 'P', shogi.LANCE: 'L', shogi.KNIGHT: 'N', 
+            shogi.SILVER: 'S', shogi.GOLD: 'G', shogi.BISHOP: 'B', 
+            shogi.ROOK: 'R', shogi.KING: 'K',
+            shogi.PROM_PAWN: '+P', shogi.PROM_LANCE: '+L', 
+            shogi.PROM_KNIGHT: '+N', shogi.PROM_SILVER: '+S',
+            shogi.PROM_BISHOP: '+B', shogi.PROM_ROOK: '+R'
         }
         
         # Colors
@@ -43,8 +53,26 @@ class EnhancedShogiGUI:
             'white_piece': '#ffffff'
         }
         
+        # Rank labels for both languages
+        self.japanese_rank_labels = ["一", "二", "三", "四", "五", "六", "七", "八", "九"]
+        self.english_rank_labels = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+        
         self.setup_ui()
         self.update_display()
+    
+    def get_piece_symbol(self, piece_type):
+        """Get piece symbol based on current language setting"""
+        if self.use_japanese:
+            return self.japanese_piece_symbols.get(piece_type, '?')
+        else:
+            return self.english_piece_symbols.get(piece_type, '?')
+    
+    def get_rank_labels(self):
+        """Get rank labels based on current language setting"""
+        if self.use_japanese:
+            return self.japanese_rank_labels
+        else:
+            return self.english_rank_labels
     
     def setup_ui(self):
         # Main container
@@ -79,9 +107,24 @@ class EnhancedShogiGUI:
         board_container = ttk.Frame(left_panel, relief=tk.RAISED, borderwidth=2)
         board_container.pack(expand=True)
         
-        # Create 9x9 grid
+        # Add file labels (9-1) at the top
+        file_labels = []
+        for col in range(9):
+            file_num = 9 - col  # 9, 8, 7, ..., 1
+            label = ttk.Label(board_container, text=str(file_num), font=('Arial', 10, 'bold'))
+            label.grid(row=0, column=col+1, pady=(0, 2))  # +1 to account for rank labels column
+            file_labels.append(label)
+        
+        # Add rank labels and create 9x9 grid
         self.square_buttons = []
+        self.rank_labels = []  # Store rank label references for updating
+        
         for row in range(9):
+            # Add rank label
+            rank_label = ttk.Label(board_container, text="", font=('Arial', 10, 'bold'))
+            rank_label.grid(row=row+1, column=0, padx=(0, 2))  # +1 to account for file labels row
+            self.rank_labels.append(rank_label)
+            
             button_row = []
             for col in range(9):
                 btn = tk.Button(
@@ -93,7 +136,7 @@ class EnhancedShogiGUI:
                     borderwidth=1,
                     command=lambda r=row, c=col: self.on_square_click(r, c)
                 )
-                btn.grid(row=row, column=col, padx=0, pady=0)
+                btn.grid(row=row+1, column=col+1, padx=0, pady=0)  # +1 to account for labels
                 button_row.append(btn)
             self.square_buttons.append(button_row)
         
@@ -112,6 +155,21 @@ class EnhancedShogiGUI:
         ttk.Button(controls_frame, text="📄 Show KIF Board", command=self.show_kif_board).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="💾 Save Game", command=self.save_game).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📂 Load Game", command=self.load_game).pack(fill=tk.X, pady=2)
+        ttk.Button(controls_frame, text="🌐 Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
+        
+        # Pieces in hand display
+        pieces_frame = ttk.LabelFrame(right_panel, text="Pieces in Hand (持駒)", padding=10)
+        pieces_frame.pack(fill=tk.X, pady=(0, 10))
+        
+        # Black pieces in hand (先手の持駒)
+        ttk.Label(pieces_frame, text="先手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W)
+        self.black_pieces_text = tk.Text(pieces_frame, height=3, width=20, font=('Courier', 9), bg='#f0f0f0')
+        self.black_pieces_text.pack(fill=tk.X, pady=2)
+        
+        # White pieces in hand (後手の持駒)
+        ttk.Label(pieces_frame, text="後手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W, pady=(10, 0))
+        self.white_pieces_text = tk.Text(pieces_frame, height=3, width=20, font=('Courier', 9), bg='#f0f0f0')
+        self.white_pieces_text.pack(fill=tk.X, pady=2)
         
         # Move input
         input_frame = ttk.LabelFrame(right_panel, text="Manual Move Input", padding=10)
@@ -155,13 +213,13 @@ class EnhancedShogiGUI:
 
 Manual input: Enter moves in USI format like '7g7f'
 
-Piece symbols:
-歩=Pawn, 香=Lance, 桂=Knight
-銀=Silver, 金=Gold, 角=Bishop
-飛=Rook, 王=King
+Use "Toggle Language" button to switch between:
+• Japanese: 歩, 香, 桂, 銀, 金, 角, 飛, 王
+• English: P, L, N, S, G, B, R, K (lowercase for white)
 
-Promoted pieces:
-と, 杏, 圭, 全, 馬, 龍"""
+Rank labels: 一-九 (Japanese) or a-i (English)
+
+Promoted pieces: + prefix in English"""
         
         ttk.Label(instructions, text=instruction_text, font=('Arial', 8), justify=tk.LEFT).pack()
     
@@ -171,6 +229,11 @@ Promoted pieces:
         turn_text = "Turn: Black (先手)" if self.board.turn == shogi.BLACK else "Turn: White (後手)"
         self.turn_label.config(text=turn_text)
         self.move_label.config(text=f"Move: {self.board.move_number}")
+        
+        # Update rank labels
+        rank_labels = self.get_rank_labels()
+        for row in range(9):
+            self.rank_labels[row].config(text=rank_labels[row])
         
         # Update board squares
         for row in range(9):
@@ -189,7 +252,12 @@ Promoted pieces:
                 if piece is None:
                     btn.config(text="", bg=bg_color, fg='black')
                 else:
-                    symbol = self.piece_symbols.get(piece.piece_type, '?')
+                    symbol = self.get_piece_symbol(piece.piece_type)
+                    
+                    # For English symbols, use case to indicate color
+                    if not self.use_japanese:
+                        if piece.color == shogi.WHITE:
+                            symbol = symbol.lower()
                     
                     # Color coding for pieces
                     if piece.color == shogi.BLACK:
@@ -209,6 +277,9 @@ Promoted pieces:
         
         # Update status
         self.update_status()
+        
+        # Update pieces in hand
+        self.update_pieces_in_hand()
     
     def get_square_from_coords(self, row, col):
         """Convert GUI coordinates to shogi square"""
@@ -216,14 +287,14 @@ Promoted pieces:
         # GUI has row 0-8, col 0-8
         # Convert to shogi square index
         file = col  # 0-8
-        rank = 8 - row  # Invert because shogi ranks go from 9 to 1, but we use 0-8
+        rank = row  # Don't invert - GUI row 0 should map to shogi rank 0
         return rank * 9 + file
     
     def get_coords_from_square(self, square):
         """Convert shogi square to GUI coordinates"""
         file = square % 9  # 0-8
         rank = square // 9  # 0-8
-        return (8 - rank, file)  # Invert rank for display
+        return (rank, file)  # Don't invert rank - direct mapping
     
     def on_square_click(self, row, col):
         """Handle square click for move selection"""
@@ -424,6 +495,41 @@ Promoted pieces:
         """Log a message to the status area"""
         self.status_text.insert(tk.END, f"{message}\n")
         self.status_text.see(tk.END)
+    
+    def update_pieces_in_hand(self):
+        """Update the pieces in hand display"""
+        # Clear existing text
+        self.black_pieces_text.delete(1.0, tk.END)
+        self.white_pieces_text.delete(1.0, tk.END)
+        
+        # Get pieces in hand for both players
+        black_pieces = self.board.pieces_in_hand[shogi.BLACK]
+        white_pieces = self.board.pieces_in_hand[shogi.WHITE]
+        
+        # Display black pieces (先手)
+        if black_pieces:
+            for piece_type, count in black_pieces.items():
+                if count > 0:
+                    piece_symbol = self.get_piece_symbol(piece_type)
+                    self.black_pieces_text.insert(tk.END, f"{piece_symbol}×{count} ")
+        else:
+            self.black_pieces_text.insert(tk.END, "None")
+        
+        # Display white pieces (後手)
+        if white_pieces:
+            for piece_type, count in white_pieces.items():
+                if count > 0:
+                    piece_symbol = self.get_piece_symbol(piece_type)
+                    self.white_pieces_text.insert(tk.END, f"{piece_symbol}×{count} ")
+        else:
+            self.white_pieces_text.insert(tk.END, "None")
+    
+    def toggle_language(self):
+        """Toggle between Japanese and English display"""
+        self.use_japanese = not self.use_japanese
+        self.update_display()
+        language = "Japanese" if self.use_japanese else "English"
+        self.log_message(f"🌐 Switched to {language} display")
 
 def main():
     root = tk.Tk()
