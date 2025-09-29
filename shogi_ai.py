@@ -25,7 +25,7 @@ class ShogiAI:
         self.nodes_evaluated = 0
         self.transposition_table = {}
         
-        # Piece values for evaluation (based on traditional shogi values)
+        # Piece values for evaluation (based on traditional shogi values), ref: https://shogishack.net/pages/assess-the-situation/valie-of-pieces.html
         self.piece_values = {
             shogi.PAWN: 1,
             shogi.LANCE: 3,
@@ -350,13 +350,13 @@ class ShogiAI:
             # King in corner is safer
             file = black_king_square % 9
             rank = black_king_square // 9
-            if file in [0, 8] or rank in [0, 8]:
+            if file in [0, 8] or rank in [0, 8]: # Assigns +2 only if king is either on 0 or 8
                 score += 2
         
         if white_king_square is not None:
             file = white_king_square % 9
             rank = white_king_square // 9
-            if file in [0, 8] or rank in [0, 8]:
+            if file in [0, 8] or rank in [0, 8]: # Assigns -2 only if king is either on 0 or 8
                 score -= 2
         
         return score
