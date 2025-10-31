@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
@@ -153,6 +152,7 @@ class EnhancedShogiGUI:
         ttk.Button(controls_frame, text="↶ Undo Move", command=self.undo_move).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📋 Show Legal Moves", command=self.show_legal_moves).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📄 Show KIF Board", command=self.show_kif_board).pack(fill=tk.X, pady=2)
+        ttk.Button(controls_frame, text="🏰 Castle Status", command=self.show_castle_status).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="🌐 Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
 
         # Pieces in hand
@@ -531,6 +531,57 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
             except Exception as e:
                 self.root.after(0, self.ai_move_error, str(e))
         threading.Thread(target=run, daemon=True).start()
+
+    def show_castle_status(self):
+        """Display castle formation status."""
+        castle_win = tk.Toplevel(self.root)
+        castle_win.title("Castle Formation Status (囲い)")
+        castle_win.geometry("500x400")
+        castle_win.configure(bg='#f0f0f0')
+        
+        main_frame = ttk.Frame(castle_win, padding=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        ttk.Label(main_frame, text="Castle Formation Analysis", 
+                 font=('Arial', 14, 'bold')).pack(pady=(0,10))
+        
+        # Black's castles
+        ttk.Label(main_frame, text="Black Player (先手):", 
+                 font=('Arial', 12, 'bold')).pack(anchor=tk.W, pady=(5,2))
+        
+        black_frame = ttk.LabelFrame(main_frame, text="Status", padding=10)
+        black_frame.pack(fill=tk.X, pady=(0,10))
+        
+        for pattern_name in ['mino_black', 'yagura_black']:
+            completion = self.ai_black.get_castle_completion(self.board, pattern_name)
+            pattern = self.ai_black.castle_patterns[pattern_name]
+            status = f"{pattern.name}: {completion*100:.1f}% complete"
+            ttk.Label(black_frame, text=status, font=('Arial', 10)).pack(anchor=tk.W)
+        
+        target_b, score_b = self.ai_black.evaluate_castle_formation(self.board, shogi.BLACK)
+        if target_b:
+            ttk.Label(black_frame, text=f"Target: {self.ai_black.castle_patterns[target_b].name} (Score: {score_b:.1f})",
+                     font=('Arial', 10, 'italic'), foreground='#2e7d32').pack(anchor=tk.W, pady=(5,0))
+        
+        # White's castles
+        ttk.Label(main_frame, text="White Player (後手):", 
+                 font=('Arial', 12, 'bold')).pack(anchor=tk.W, pady=(10,2))
+        
+        white_frame = ttk.LabelFrame(main_frame, text="Status", padding=10)
+        white_frame.pack(fill=tk.X, pady=(0,10))
+        
+        for pattern_name in ['mino_white', 'yagura_white']:
+            completion = self.ai_white.get_castle_completion(self.board, pattern_name)
+            pattern = self.ai_white.castle_patterns[pattern_name]
+            status = f"{pattern.name}: {completion*100:.1f}% complete"
+            ttk.Label(white_frame, text=status, font=('Arial', 10)).pack(anchor=tk.W)
+        
+        target_w, score_w = self.ai_white.evaluate_castle_formation(self.board, shogi.WHITE)
+        if target_w:
+            ttk.Label(white_frame, text=f"Target: {self.ai_white.castle_patterns[target_w].name} (Score: {score_w:.1f})",
+                     font=('Arial', 10, 'italic'), foreground='#d32f2f').pack(anchor=tk.W, pady=(5,0))
+        
+        ttk.Button(main_frame, text="Close", command=castle_win.destroy).pack(pady=(10,0))
 
 def main():
     root = tk.Tk()
