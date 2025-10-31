@@ -1,7 +1,7 @@
 # Shogi AI Implementation Summary
 
 ## Overview
-Successfully implemented a two-player shogi game with an intelligent computer opponent using the Minimax algorithm with several optimizations to handle the complexity of shogi.
+Successfully implemented a two-player shogi game with an intelligent computer opponent using the Minimax algorithm with several optimizations to handle the complexity of shogi. Additionally implemented the captured pieces (pieces in hand / 持駒) functionality for authentic Shogi gameplay.
 
 ## Files Created/Modified
 
@@ -9,15 +9,26 @@ Successfully implemented a two-player shogi game with an intelligent computer op
 1. **`shogi_ai.py`** - Core AI engine implementation
 2. **`launch_shogi_ai.py`** - Game launcher with mode selection
 3. **`test_ai.py`** - AI testing and validation script
-4. **`AI_FEATURES_README.md`** - Detailed documentation of AI features
-5. **`IMPLEMENTATION_SUMMARY.md`** - This summary file
+4. **`test_captured_pieces.py`** - Test captured pieces functionality
+5. **`test_drop_moves.py`** - Test drop move functionality
+6. **`AI_FEATURES_README.md`** - Detailed documentation of AI features
+7. **`CAPTURED_PIECES_README.md`** - Documentation of captured pieces feature
+8. **`IMPLEMENTATION_SUMMARY.md`** - This summary file
 
 ### Modified Files:
-1. **`shogi_gui_enhanced.py`** - Enhanced GUI with AI support
+1. **`shogi_gui_enhanced.py`** - Enhanced GUI with AI support and captured pieces functionality
 
 ## Key Features Implemented
 
-### 1. AI Engine (`shogi_ai.py`)
+### 1. Captured Pieces System (NEW)
+- ✅ **Wooden Box Display**: Pieces in hand shown in styled wooden containers
+- ✅ **Clickable Interface**: Players can click pieces to select for dropping
+- ✅ **Drop Move Validation**: Full compliance with Shogi drop rules
+- ✅ **Visual Feedback**: Valid drop zones highlighted in light green
+- ✅ **AI Integration**: Computer opponent strategically uses captured pieces
+- ✅ **Manual Input Support**: USI notation for drops (e.g., "P*5e")
+
+### 2. AI Engine (`shogi_ai.py`)
 - ✅ **Minimax Algorithm** with Alpha-Beta pruning
 - ✅ **Iterative Deepening** for better time management
 - ✅ **Transposition Table** for position caching

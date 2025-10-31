@@ -22,6 +22,8 @@ class EnhancedShogiGUI:
         self.board = shogi.Board()
         self.selected_square = None
         self.selected_piece = None
+        self.selected_hand_piece = None  # For pieces selected from hand
+        self.selected_hand_color = None  # Color of the selected piece from hand
         self.move_history = []
         self.highlighted_moves = []
         self.use_japanese = True  # Language setting: True for Japanese, False for English
@@ -198,25 +200,47 @@ class EnhancedShogiGUI:
         ttk.Button(controls_frame, text="📂 Load Game", command=self.load_game).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="🌐 Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
         
-        # Pieces in hand display
+        # Pieces in hand display (styled like wooden boxes)
         pieces_frame = ttk.LabelFrame(right_panel, text="Pieces in Hand (持駒)", padding=10)
         pieces_frame.pack(fill=tk.X, pady=(0, 10))
         
-        # Black pieces in hand (先手の持駒)
-        ttk.Label(pieces_frame, text="先手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W)
-        self.black_pieces_text = tk.Text(pieces_frame, height=3, width=20, font=('Courier', 9), bg='#f0f0f0')
-        self.black_pieces_text.pack(fill=tk.X, pady=2)
+        # Black pieces in hand (先手の持駒) - wooden box style
+        black_label_frame = ttk.Frame(pieces_frame)
+        black_label_frame.pack(fill=tk.X, pady=(0, 5))
+        ttk.Label(black_label_frame, text="先手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W)
         
-        # White pieces in hand (後手の持駒)
-        ttk.Label(pieces_frame, text="後手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W, pady=(10, 0))
-        self.white_pieces_text = tk.Text(pieces_frame, height=3, width=20, font=('Courier', 9), bg='#f0f0f0')
-        self.white_pieces_text.pack(fill=tk.X, pady=2)
+        # Black pieces wooden box
+        self.black_pieces_frame = tk.Frame(
+            pieces_frame, 
+            bg='#8B4513',  # Saddle brown for wooden appearance
+            relief=tk.SUNKEN, 
+            bd=3,
+            padx=5,
+            pady=5
+        )
+        self.black_pieces_frame.pack(fill=tk.X, pady=2)
+        
+        # White pieces in hand (後手の持駒) - wooden box style  
+        white_label_frame = ttk.Frame(pieces_frame)
+        white_label_frame.pack(fill=tk.X, pady=(10, 5))
+        ttk.Label(white_label_frame, text="後手の持駒:", font=('Arial', 10, 'bold')).pack(anchor=tk.W)
+        
+        # White pieces wooden box
+        self.white_pieces_frame = tk.Frame(
+            pieces_frame, 
+            bg='#8B4513',  # Saddle brown for wooden appearance
+            relief=tk.SUNKEN, 
+            bd=3,
+            padx=5,
+            pady=5
+        )
+        self.white_pieces_frame.pack(fill=tk.X, pady=2)
         
         # Move input
         input_frame = ttk.LabelFrame(right_panel, text="Manual Move Input", padding=10)
         input_frame.pack(fill=tk.X, pady=(0, 10))
         
-        ttk.Label(input_frame, text="USI Format (e.g., 7g7f):").pack(anchor=tk.W)
+        ttk.Label(input_frame, text="USI Format (e.g., 7g7f or P*5e):").pack(anchor=tk.W)
         
         entry_frame = ttk.Frame(input_frame)
         entry_frame.pack(fill=tk.X, pady=(5, 0))
@@ -252,7 +276,9 @@ class EnhancedShogiGUI:
         
         instruction_text = """Click pieces to select them, then click destination to move.
 
-Manual input: Enter moves in USI format like '7g7f'
+Click pieces in hand to select for dropping, then click valid squares.
+
+Manual input: Enter moves in USI format like '7g7f' or drops like 'P*5e'
 
 Use "Toggle Language" button to switch between:
 • Japanese: 歩, 香, 桂, 銀, 金, 角, 飛, 王
@@ -260,7 +286,9 @@ Use "Toggle Language" button to switch between:
 
 Rank labels: 一-九 (Japanese) or a-i (English)
 
-Promoted pieces: + prefix in English"""
+Promoted pieces: + prefix in English
+
+Drop notation: Use * (e.g., P*5e drops pawn at 5e)"""
         
         ttk.Label(instructions, text=instruction_text, font=('Arial', 8), justify=tk.LEFT).pack()
     
@@ -319,7 +347,11 @@ Promoted pieces: + prefix in English"""
                 if self.selected_square == square:
                     btn.config(relief=tk.SUNKEN, bd=3, bg=self.colors['selected'])
                 elif square in self.highlighted_moves:
-                    btn.config(relief=tk.RAISED, bd=2, bg=self.colors['highlight'])
+                    # Special highlighting for drop zones
+                    if self.selected_hand_piece is not None:
+                        btn.config(relief=tk.SUNKEN, bd=3, bg='#90EE90')  # Light green for drop zones
+                    else:
+                        btn.config(relief=tk.RAISED, bd=2, bg=self.colors['highlight'])
                 else:
                     btn.config(relief=tk.RAISED, bd=1)
         
@@ -344,6 +376,14 @@ Promoted pieces: + prefix in English"""
         rank = square // 9  # 0-8
         return (rank, file)  # Don't invert rank - direct mapping
     
+    def square_to_notation(self, square):
+        """Convert square number to human-readable notation"""
+        file = square % 9  # 0-8
+        rank = square // 9  # 0-8
+        file_char = str(9 - file)  # Convert to 9-1
+        rank_char = chr(ord('a') + rank)  # Convert to a-i
+        return f"{file_char}{rank_char}"
+    
     def on_square_click(self, row, col):
         """Handle square click for move selection"""
         # Don't allow moves if AI is thinking
@@ -357,11 +397,24 @@ Promoted pieces: + prefix in English"""
         square = self.get_square_from_coords(row, col)
         piece = self.board.piece_at(square)
         
+        # Check if we're dropping a piece from hand
+        if self.selected_hand_piece is not None:
+            if self.try_drop_move(square):
+                return
+            else:
+                # Clear selection if drop failed
+                self.clear_selection()
+                self.update_display()
+                return
+        
         if self.selected_square is None:
             # First click - select piece
             if piece is not None and piece.color == self.board.turn:
                 self.selected_square = square
                 self.selected_piece = piece
+                # Clear hand selection
+                self.selected_hand_piece = None
+                self.selected_hand_color = None
                 self.highlight_legal_moves()
                 self.update_display()
         else:
@@ -389,6 +442,8 @@ Promoted pieces: + prefix in English"""
         """Clear current selection"""
         self.selected_square = None
         self.selected_piece = None
+        self.selected_hand_piece = None
+        self.selected_hand_color = None
         self.highlighted_moves = []
     
     def try_make_move(self, from_square, to_square):
@@ -576,7 +631,16 @@ Promoted pieces: + prefix in English"""
     
     def log_move(self, move):
         """Log a move to the status area"""
-        self.log_message(f"Move {self.board.move_number}: {move.usi()}")
+        player = "Black" if self.board.turn == shogi.WHITE else "White"  # Previous turn
+        
+        if move.drop_piece_type is not None:
+            # Drop move
+            piece_symbol = self.get_piece_symbol(move.drop_piece_type)
+            square_notation = self.square_to_notation(move.to_square)
+            self.log_message(f"Move {self.board.move_number - 1}: {player} drops {piece_symbol} to {square_notation} ({move.usi()})")
+        else:
+            # Regular move
+            self.log_message(f"Move {self.board.move_number - 1}: {player} plays {move.usi()}")
     
     def log_message(self, message):
         """Log a message to the status area"""
@@ -584,32 +648,169 @@ Promoted pieces: + prefix in English"""
         self.status_text.see(tk.END)
     
     def update_pieces_in_hand(self):
-        """Update the pieces in hand display"""
-        # Clear existing text
-        self.black_pieces_text.delete(1.0, tk.END)
-        self.white_pieces_text.delete(1.0, tk.END)
+        """Update the pieces in hand display with clickable pieces"""
+        # Clear existing buttons
+        for widget in self.black_pieces_frame.winfo_children():
+            widget.destroy()
+        for widget in self.white_pieces_frame.winfo_children():
+            widget.destroy()
         
         # Get pieces in hand for both players
         black_pieces = self.board.pieces_in_hand[shogi.BLACK]
         white_pieces = self.board.pieces_in_hand[shogi.WHITE]
         
-        # Display black pieces (先手)
+        # Display black pieces (先手) with clickable buttons
         if black_pieces:
+            col = 0
             for piece_type, count in black_pieces.items():
                 if count > 0:
                     piece_symbol = self.get_piece_symbol(piece_type)
-                    self.black_pieces_text.insert(tk.END, f"{piece_symbol}×{count} ")
+                    # Create button for each piece type
+                    btn_text = f"{piece_symbol}×{count}"
+                    btn = tk.Button(
+                        self.black_pieces_frame,
+                        text=btn_text,
+                        font=('Courier', 10, 'bold'),
+                        width=6,
+                        height=1,
+                        bg='#DEB887',  # Burlywood for wooden piece color
+                        fg='#000000',
+                        relief=tk.RAISED,
+                        borderwidth=2,
+                        activebackground='#F5DEB3',  # Wheat color when active
+                        command=lambda pt=piece_type, c=shogi.BLACK: self.select_piece_from_hand(pt, c)
+                    )
+                    btn.grid(row=0, column=col, padx=2, pady=1)
+                    col += 1
         else:
-            self.black_pieces_text.insert(tk.END, "None")
+            tk.Label(self.black_pieces_frame, text="None", font=('Arial', 9), 
+                    fg='#654321', bg='#8B4513').grid(row=0, column=0)
         
-        # Display white pieces (後手)
+        # Display white pieces (後手) with clickable buttons
         if white_pieces:
+            col = 0
             for piece_type, count in white_pieces.items():
                 if count > 0:
                     piece_symbol = self.get_piece_symbol(piece_type)
-                    self.white_pieces_text.insert(tk.END, f"{piece_symbol}×{count} ")
+                    # Create button for each piece type
+                    btn_text = f"{piece_symbol}×{count}"
+                    btn = tk.Button(
+                        self.white_pieces_frame,
+                        text=btn_text,
+                        font=('Courier', 10, 'bold'),
+                        width=6,
+                        height=1,
+                        bg='#DEB887',  # Burlywood for wooden piece color
+                        fg='#000000',
+                        relief=tk.RAISED,
+                        borderwidth=2,
+                        activebackground='#F5DEB3',  # Wheat color when active
+                        command=lambda pt=piece_type, c=shogi.WHITE: self.select_piece_from_hand(pt, c)
+                    )
+                    btn.grid(row=0, column=col, padx=2, pady=1)
+                    col += 1
         else:
-            self.white_pieces_text.insert(tk.END, "None")
+            tk.Label(self.white_pieces_frame, text="None", font=('Arial', 9), 
+                    fg='#654321', bg='#8B4513').grid(row=0, column=0)
+        
+        # Update button states based on current turn and selection
+        self.update_hand_button_states()
+    
+    def select_piece_from_hand(self, piece_type, color):
+        """Select a piece from hand for dropping"""
+        # Don't allow selection if AI is thinking
+        if self.ai_thinking:
+            return
+            
+        # In AI mode, only allow user to select on their turn
+        if self.game_mode == "human_vs_ai" and color != self.user_color:
+            return
+            
+        # Only allow selection if it's the player's turn
+        if self.board.turn != color:
+            return
+            
+        # Clear board selection
+        self.selected_square = None
+        self.selected_piece = None
+        
+        # Set hand selection
+        self.selected_hand_piece = piece_type
+        self.selected_hand_color = color
+        
+        # Highlight valid drop squares
+        self.highlight_drop_moves()
+        self.update_display()
+        self.update_hand_button_states()
+    
+    def highlight_drop_moves(self):
+        """Highlight valid drop squares for selected piece from hand"""
+        if self.selected_hand_piece is None:
+            return
+        
+        self.highlighted_moves = []
+        for move in self.board.legal_moves:
+            # Check if this is a drop move for our selected piece
+            if (move.drop_piece_type == self.selected_hand_piece and 
+                move.from_square is None):
+                self.highlighted_moves.append(move.to_square)
+    
+    def update_hand_button_states(self):
+        """Update the visual state of hand piece buttons"""
+        # Update black pieces buttons
+        for widget in self.black_pieces_frame.winfo_children():
+            if isinstance(widget, tk.Button):
+                if (self.selected_hand_color == shogi.BLACK and 
+                    self.board.turn == shogi.BLACK):
+                    # Highlight if this piece type is selected
+                    widget.config(bg='#FFD700', relief=tk.SUNKEN)  # Gold highlight
+                elif self.board.turn == shogi.BLACK:
+                    # Available for selection
+                    widget.config(bg='#F0E68C', relief=tk.RAISED)  # Khaki for available
+                else:
+                    # Not this player's turn
+                    widget.config(bg='#D2B48C', relief=tk.FLAT)  # Tan for inactive
+        
+        # Update white pieces buttons
+        for widget in self.white_pieces_frame.winfo_children():
+            if isinstance(widget, tk.Button):
+                if (self.selected_hand_color == shogi.WHITE and 
+                    self.board.turn == shogi.WHITE):
+                    # Highlight if this piece type is selected
+                    widget.config(bg='#FFD700', relief=tk.SUNKEN)  # Gold highlight
+                elif self.board.turn == shogi.WHITE:
+                    # Available for selection
+                    widget.config(bg='#F0E68C', relief=tk.RAISED)  # Khaki for available
+                else:
+                    # Not this player's turn
+                    widget.config(bg='#D2B48C', relief=tk.FLAT)  # Tan for inactive
+    
+    def try_drop_move(self, to_square):
+        """Try to drop a piece from hand to the specified square"""
+        if self.selected_hand_piece is None:
+            return False
+        
+        # Create drop move
+        drop_move = shogi.Move(None, to_square, False, self.selected_hand_piece)
+        
+        # Check if move is legal
+        if drop_move in self.board.legal_moves:
+            self.board.push(drop_move)
+            self.move_history.append(drop_move)
+            self.log_move(drop_move)
+            self.clear_selection()
+            self.update_display()
+            
+            # Trigger AI move if in AI mode and it's AI's turn
+            if (self.game_mode == "human_vs_ai" and 
+                self.board.turn != self.user_color and 
+                not self.board.is_game_over()):
+                self.root.after(500, self.make_ai_move)
+            
+            return True
+        else:
+            self.log_message(f"Invalid drop: {self.get_piece_symbol(self.selected_hand_piece)} to {self.square_to_notation(to_square)}")
+            return False
     
     def toggle_language(self):
         """Toggle between Japanese and English display"""
