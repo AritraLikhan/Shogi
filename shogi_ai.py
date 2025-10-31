@@ -1,434 +1,541 @@
+
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Shogi AI using Minimax algorithm with Alpha-Beta pruning and other optimizations.
-Implements an intelligent computer opponent for the shogi game.
+Shogi AI using Minimax with Alpha-Beta pruning.
+Now supports configurable fuzzy profiles to create different AI "styles".
 """
 
 import shogi
 import random
 import time
-from typing import List, Tuple, Optional
-import copy
+from typing import List, Tuple, Optional, Dict
+import math
+
+Matrix = List[List[float]]
+
+def mirror_vertical(mat: Matrix) -> Matrix:
+    """Mirror a 9x9 matrix vertically (for opposite side)."""
+    return [row[:] for row in mat[::-1]]
+
+def make_uniform(value: float) -> Matrix:
+    """Return 9x9 filled matrix with value."""
+    return [[value for _ in range(9)] for _ in range(9)]
+
+class FuzzyProfile:
+    """
+    Holds fuzzy arrays and weights for a particular AI agent.
+    Arrays are 9x9 matrices with values in [0,1].
+    """
+    def __init__(self,
+                 center: Matrix,
+                 flanks: Matrix,
+                 promotion_black: Matrix,
+                 king_safety: Matrix,
+                 drop_potential_black: Matrix,
+                 weights: Dict[str, float] = None):
+        self.center = center
+        self.flanks = flanks
+        self.promotion_black = promotion_black
+        self.promotion_white = mirror_vertical(promotion_black)
+        self.king_safety = king_safety
+        self.drop_potential_black = drop_potential_black
+        self.drop_potential_white = mirror_vertical(drop_potential_black)
+        self.weights = weights or {
+            "w_center": 0.4,
+            "w_flanks": 0.1,
+            "w_promo": 0.2,
+            "w_kings": 0.15,
+            "w_drop": 0.15
+        }
+
+def default_fuzzy_profiles():
+    """Create two example profiles with different strategic biases."""
+    # Center emphasis
+    center = [
+        [0,0,0.1,0.2,0.25,0.2,0.1,0,0],
+        [0,0.1,0.25,0.5,0.6,0.5,0.25,0.1,0],
+        [0.1,0.25,0.6,0.8,1.0,0.8,0.6,0.25,0.1],
+        [0.2,0.5,0.8,1.0,1.0,1.0,0.8,0.5,0.2],
+        [0.25,0.6,1.0,1.0,1.0,1.0,1.0,0.6,0.25],
+        [0.2,0.5,0.8,1.0,1.0,1.0,0.8,0.5,0.2],
+        [0.1,0.25,0.6,0.8,1.0,0.8,0.6,0.25,0.1],
+        [0,0.1,0.25,0.5,0.6,0.5,0.25,0.1,0],
+        [0,0,0.1,0.2,0.25,0.2,0.1,0,0],
+    ]
+    # Flank emphasis: 1.0 on files 1 & 9, decays toward center
+    flank_row = [1.0,0.75,0.5,0.25,0,0.25,0.5,0.75,1.0]
+    flanks = [flank_row[:] for _ in range(9)]
+
+    # Promotion potential (for Black, bottom-to-top orientation)
+    promotion_black = [
+        [0.5]*9,
+        [0.75]*9,
+        [1.0]*9,
+        [1.0]*9,
+        [0.8]*9,
+        [0.6]*9,
+        [0.4]*9,
+        [0.2]*9,
+        [0.1]*9,
+    ]
+    # King safety: safer near corners/back ranks for both sides
+    king_safety = [
+        [0.8,0.9,1.0,0.7,0.4,0.4,0.7,1.0,0.9],
+        [0.7,0.8,0.9,0.6,0.3,0.3,0.6,0.9,0.8],
+        [0.5,0.6,0.7,0.5,0.3,0.3,0.5,0.7,0.6],
+        [0.2,0.3,0.4,0.3,0.2,0.2,0.3,0.4,0.3],
+        [0.1,0.2,0.2,0.2,0.1,0.2,0.2,0.2,0.1],
+        [0.2,0.3,0.4,0.3,0.2,0.2,0.3,0.4,0.3],
+        [0.5,0.6,0.7,0.5,0.3,0.3,0.5,0.7,0.6],
+        [0.7,0.8,0.9,0.6,0.3,0.3,0.6,0.9,0.8],
+        [0.8,0.9,1.0,0.7,0.4,0.4,0.7,1.0,0.9],
+    ]
+    # Drop potential for Black: high in enemy territory center
+    drop_black = [
+        [0.6,0.7,0.8,0.9,1.0,0.9,0.8,0.7,0.6],
+        [0.6,0.7,0.85,0.95,1.0,0.95,0.85,0.7,0.6],
+        [0.5,0.6,0.8,0.9,0.95,0.9,0.8,0.6,0.5],
+        [0.4,0.6,0.75,0.85,0.9,0.85,0.75,0.6,0.4],
+        [0.3,0.5,0.7,0.8,0.85,0.8,0.7,0.5,0.3],
+        [0.25,0.4,0.6,0.7,0.75,0.7,0.6,0.4,0.25],
+        [0.2,0.35,0.5,0.6,0.65,0.6,0.5,0.35,0.2],
+        [0.15,0.3,0.45,0.55,0.6,0.55,0.45,0.3,0.15],
+        [0.1,0.2,0.3,0.4,0.45,0.4,0.3,0.2,0.1],
+    ]
+
+    # Profile A: Aggressive Centralist
+    profile_a = FuzzyProfile(center=center,
+                             flanks=flanks,
+                             promotion_black=promotion_black,
+                             king_safety=king_safety,
+                             drop_potential_black=drop_black,
+                             weights={"w_center":0.5,"w_flanks":0.05,"w_promo":0.25,"w_kings":0.1,"w_drop":0.1})
+
+    # Profile B: Balanced Tactician (more defensive, flank-oriented)
+    profile_b = FuzzyProfile(center=center,
+                             flanks=flanks,
+                             promotion_black=promotion_black,
+                             king_safety=king_safety,
+                             drop_potential_black=drop_black,
+                             weights={"w_center":0.2,"w_flanks":0.3,"w_promo":0.15,"w_kings":0.25,"w_drop":0.1})
+    return profile_a, profile_b
 
 class ShogiAI:
-    def __init__(self, depth: int = 3, time_limit: float = 5.0):
-        """
-        Initialize the Shogi AI.
-        
-        Args:
-            depth: Maximum search depth for minimax algorithm
-            time_limit: Maximum time (seconds) to spend on each move
-        """
+    def __init__(self, depth: int = 3, time_limit: float = 5.0, fuzzy: FuzzyProfile = None):
         self.depth = depth
         self.time_limit = time_limit
         self.nodes_evaluated = 0
         self.transposition_table = {}
+        self.fuzzy = fuzzy or default_fuzzy_profiles()[0]  # default A
         
-        # Piece values for evaluation (based on traditional shogi values), ref: https://shogishack.net/pages/assess-the-situation/valie-of-pieces.html
+        # Position history for repetition detection
+        self.position_history = {}
+        self.move_count = 0
+
+        # Material values
         self.piece_values = {
-            shogi.PAWN: 1,
-            shogi.LANCE: 3,
-            shogi.KNIGHT: 4,
-            shogi.SILVER: 5,
-            shogi.GOLD: 6,
-            shogi.BISHOP: 8,
-            shogi.ROOK: 10,
-            shogi.KING: 1000,
-            shogi.PROM_PAWN: 12,
-            shogi.PROM_LANCE: 10,
-            shogi.PROM_KNIGHT: 10,
-            shogi.PROM_SILVER: 10,
-            shogi.PROM_BISHOP: 12,
-            shogi.PROM_ROOK: 12,
+            shogi.PAWN: 1, shogi.LANCE: 3, shogi.KNIGHT: 4, shogi.SILVER: 5,
+            shogi.GOLD: 6, shogi.BISHOP: 8, shogi.ROOK: 10, shogi.KING: 1000,
+            shogi.PROM_PAWN: 12, shogi.PROM_LANCE: 10, shogi.PROM_KNIGHT: 10, shogi.PROM_SILVER: 10,
+            shogi.PROM_BISHOP: 12, shogi.PROM_ROOK: 12,
         }
-        
-        # Positional values for pieces (center control, king safety, etc.)
+
+        # Basic positional tables retained for piece-type flavor
         self.positional_values = self._initialize_positional_values()
-        
+
+    def set_fuzzy_profile(self, fuzzy: FuzzyProfile):
+        self.fuzzy = fuzzy
+
     def _initialize_positional_values(self) -> dict:
-        """Initialize positional value tables for different piece types."""
-        # Create 9x9 positional value tables
         tables = {}
-        
-        # Pawn positional values (encourage advancement)
-        pawn_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [2, 2, 2, 2, 2, 2, 2, 2, 2],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [4, 4, 4, 4, 4, 4, 4, 4, 4],
+        # Improved advancement/centrality biases to encourage forward movement
+        tables[shogi.PAWN] = [
+            [0]*9,[0]*9,[0]*9,[1]*9,[2]*9,
+            [3]*9,[5]*9,[8]*9,[12]*9,  # Strong advancement bonus
         ]
-        tables[shogi.PAWN] = pawn_table
-        
-        # Gold positional values (defensive pieces)
-        gold_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [2, 2, 2, 2, 2, 2, 2, 2, 2],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3],
+        tables[shogi.GOLD] = [
+            [0]*9,[0]*9,[0]*9,[1]*9,[2]*9,[3]*9,[4]*9,[6]*9,[8]*9,
         ]
-        tables[shogi.GOLD] = gold_table
-        
-        # Silver positional values (aggressive pieces)
-        silver_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [2, 2, 2, 2, 2, 2, 2, 2, 2],
-            [3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [4, 4, 4, 4, 4, 4, 4, 4, 4],
+        tables[shogi.SILVER] = [
+            [0]*9,[0]*9,[1]*9,[2]*9,[3]*9,[4]*9,[6]*9,[8]*9,[10]*9,
         ]
-        tables[shogi.SILVER] = silver_table
-        
-        # Bishop positional values (center control)
-        bishop_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 2, 0, 0, 0, 2, 0, 0],
-            [0, 0, 0, 3, 0, 3, 0, 0, 0],
-            [0, 0, 0, 0, 4, 0, 0, 0, 0],
-            [0, 0, 0, 3, 0, 3, 0, 0, 0],
-            [0, 0, 2, 0, 0, 0, 2, 0, 0],
-            [0, 1, 0, 0, 0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        tables[shogi.LANCE] = [
+            [0]*9,[0]*9,[1]*9,[2]*9,[3]*9,[4]*9,[6]*9,[8]*9,[10]*9,
         ]
-        tables[shogi.BISHOP] = bishop_table
-        
-        # Rook positional values (center control)
-        rook_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 2, 1, 1, 1, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        tables[shogi.KNIGHT] = [
+            [0]*9,[0]*9,[1]*9,[2]*9,[3]*9,[4]*9,[5]*9,[6]*9,[8]*9,
         ]
-        tables[shogi.ROOK] = rook_table
-        
-        # King positional values (safety in corners early, center later)
-        king_table = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        tables[shogi.BISHOP] = [
+            [0,0,0,0,0,0,0,0,0],
+            [0,2,0,0,0,0,0,2,0],
+            [0,0,4,0,0,0,4,0,0],
+            [0,0,0,6,0,6,0,0,0],
+            [0,0,0,0,8,0,0,0,0],
+            [0,0,0,6,0,6,0,0,0],
+            [0,0,4,0,0,0,4,0,0],
+            [0,2,0,0,0,0,0,2,0],
+            [0,0,0,0,0,0,0,0,0],
         ]
-        tables[shogi.KING] = king_table
-        
+        tables[shogi.ROOK] = [
+            [2]*9,[2]*9,[3]*9,[4]*9,
+            [3,3,3,3,6,3,3,3,3],  # Enhanced center value
+            [4]*9,[3]*9,[2]*9,[2]*9,
+        ]
+        tables[shogi.KING] = [[0]*9 for _ in range(9)]
         return tables
-    
+
     def get_best_move(self, board: shogi.Board) -> Optional[shogi.Move]:
-        """
-        Get the best move for the current position using minimax with alpha-beta pruning.
-        
-        Args:
-            board: Current shogi board position
-            
-        Returns:
-            Best move found, or None if no legal moves available
-        """
         self.nodes_evaluated = 0
-        start_time = time.time()
-        
-        legal_moves = list(board.legal_moves)
-        if not legal_moves:
+        start = time.time()
+        legal = list(board.legal_moves)
+        if not legal:
             return None
+        if len(legal) == 1:
+            # Update position history even for forced moves
+            pos_key = str(board)
+            self.position_history[pos_key] = self.position_history.get(pos_key, 0) + 1
+            return legal[0]
+
+        # Track current position
+        current_pos = str(board)
         
-        # If only one move available, return it immediately
-        if len(legal_moves) == 1:
-            return legal_moves[0]
-        
-        # Sort moves for better alpha-beta pruning (captures first, then promotions)
-        legal_moves = self._order_moves(board, legal_moves)
-        
+        legal = self._order_moves(board, legal)
         best_move = None
         best_score = float('-inf') if board.turn == shogi.BLACK else float('inf')
-        
-        # Iterative deepening for better time management
-        for current_depth in range(1, self.depth + 1):
-            if time.time() - start_time > self.time_limit:
+
+        # Iterative deepening
+        for d in range(1, self.depth + 1):
+            if time.time() - start > self.time_limit:
                 break
-                
-            for move in legal_moves:
-                if time.time() - start_time > self.time_limit:
+            for move in legal:
+                if time.time() - start > self.time_limit:
                     break
-                    
-                # Make the move
                 board.push(move)
                 
-                # Evaluate the position
-                if current_depth == 1:
-                    score = self._evaluate_position(board)
+                # Check for repetition after move
+                future_pos = str(board)
+                repetition_penalty = 0
+                if future_pos in self.position_history:
+                    repetition_penalty = -50 * self.position_history[future_pos]  # Heavy penalty for repetition
+                
+                if d == 1:
+                    score = self._evaluate_position(board) + repetition_penalty
                 else:
-                    score = self._minimax(board, current_depth - 1, 
-                                        float('-inf'), float('inf'), False)
-                
-                # Undo the move
+                    score = self._minimax(board, d - 1, float('-inf'), float('inf'), board.turn == shogi.WHITE) + repetition_penalty
                 board.pop()
-                
-                # Update best move
+
                 if board.turn == shogi.BLACK:
                     if score > best_score:
-                        best_score = score
-                        best_move = move
+                        best_score, best_move = score, move
                 else:
                     if score < best_score:
-                        best_score = score
-                        best_move = move
-        
-        # If no move was found in time, return a random legal move
-        if best_move is None:
-            best_move = random.choice(legal_moves)
-        
-        elapsed_time = time.time() - start_time
-        print(f"AI evaluated {self.nodes_evaluated} nodes in {elapsed_time:.2f}s")
-        
-        return best_move
-    
-    def _minimax(self, board: shogi.Board, depth: int, alpha: float, beta: float, 
-                 maximizing_player: bool) -> float:
-        """
-        Minimax algorithm with alpha-beta pruning.
-        
-        Args:
-            board: Current board position
-            depth: Remaining search depth
-            alpha: Alpha value for pruning
-            beta: Beta value for pruning
-            maximizing_player: True if current player is maximizing
+                        best_score, best_move = score, move
+
+        # Update position history with chosen move
+        if best_move:
+            board.push(best_move)
+            pos_key = str(board)
+            self.position_history[pos_key] = self.position_history.get(pos_key, 0) + 1
+            board.pop()
             
-        Returns:
-            Evaluation score for the position
-        """
+        # Clean old positions from history to prevent memory bloat
+        self.move_count += 1
+        if self.move_count % 20 == 0:
+            self._clean_position_history()
+
+        return best_move or random.choice(legal)
+
+    def _clean_position_history(self):
+        """Remove old positions from history to prevent memory bloat"""
+        if len(self.position_history) > 100:
+            # Keep only the most recent positions
+            sorted_items = sorted(self.position_history.items(), key=lambda x: x[1], reverse=True)
+            self.position_history = dict(sorted_items[:50])
+
+    def _minimax(self, board: shogi.Board, depth: int, alpha: float, beta: float, maximizing_white: bool) -> float:
         self.nodes_evaluated += 1
-        
-        # Terminal conditions
         if depth == 0 or board.is_game_over():
             return self._evaluate_position(board)
-        
-        # Check transposition table
-        board_hash = hash(str(board))
-        if board_hash in self.transposition_table:
-            return self.transposition_table[board_hash]
-        
-        legal_moves = list(board.legal_moves)
-        if not legal_moves:
+
+        key = hash(str(board))
+        if key in self.transposition_table:
+            return self.transposition_table[key]
+
+        legal = list(board.legal_moves)
+        if not legal:
             return self._evaluate_position(board)
-        
-        # Order moves for better pruning
-        legal_moves = self._order_moves(board, legal_moves)
-        
-        if maximizing_player:
-            max_eval = float('-inf')
-            for move in legal_moves:
-                board.push(move)
-                eval_score = self._minimax(board, depth - 1, alpha, beta, False)
+
+        legal = self._order_moves(board, legal)
+        if maximizing_white:
+            best = float('-inf')
+            for mv in legal:
+                board.push(mv)
+                val = self._minimax(board, depth-1, alpha, beta, False)
                 board.pop()
-                max_eval = max(max_eval, eval_score)
-                alpha = max(alpha, eval_score)
-                if beta <= alpha:
-                    break  # Beta cutoff
-            self.transposition_table[board_hash] = max_eval
-            return max_eval
+                if val > best: best = val
+                if val > alpha: alpha = val
+                if beta <= alpha: break
         else:
-            min_eval = float('inf')
-            for move in legal_moves:
-                board.push(move)
-                eval_score = self._minimax(board, depth - 1, alpha, beta, True)
+            best = float('inf')
+            for mv in legal:
+                board.push(mv)
+                val = self._minimax(board, depth-1, alpha, beta, True)
                 board.pop()
-                min_eval = min(min_eval, eval_score)
-                beta = min(beta, eval_score)
-                if beta <= alpha:
-                    break  # Alpha cutoff
-            self.transposition_table[board_hash] = min_eval
-            return min_eval
-    
+                if val < best: best = val
+                if val < beta: beta = val
+                if beta <= alpha: break
+
+        self.transposition_table[key] = best
+        return best
+
     def _evaluate_position(self, board: shogi.Board) -> float:
-        """
-        Evaluate the current board position.
+        score = 0.0
         
-        Args:
-            board: Current board position
-            
-        Returns:
-            Evaluation score (positive favors black, negative favors white)
-        """
-        score = 0
-        
-        # Material evaluation
-        for square in range(81):
-            piece = board.piece_at(square)
-            if piece is not None:
-                piece_value = self.piece_values.get(piece.piece_type, 0)
-                positional_value = self._get_positional_value(piece, square)
-                
-                if piece.color == shogi.BLACK:
-                    score += piece_value + positional_value
-                else:
-                    score -= piece_value + positional_value
-        
-        # Pieces in hand evaluation
-        for color in [shogi.BLACK, shogi.WHITE]:
-            pieces_in_hand = board.pieces_in_hand[color]
-            for piece_type, count in pieces_in_hand.items():
-                piece_value = self.piece_values.get(piece_type, 0)
-                if color == shogi.BLACK:
-                    score += piece_value * count * 0.5  # Reduced value for pieces in hand
-                else:
-                    score -= piece_value * count * 0.5
-        
-        # King safety evaluation
-        score += self._evaluate_king_safety(board)
-        
-        # Center control evaluation
-        score += self._evaluate_center_control(board)
-        
-        # Check for checkmate/stalemate
-        if board.is_checkmate():
-            if board.turn == shogi.BLACK:
-                score = -10000  # White wins
+        # Material and positional
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece is None:
+                continue
+            base = self.piece_values.get(piece.piece_type, 0)
+            pos = self._get_positional_value(piece, sq)
+
+            # Fuzzy spatial contributions
+            r = sq // 9
+            c = sq % 9
+            if piece.color == shogi.BLACK:
+                f_center = self.fuzzy.center[r][c]
+                f_flank = self.fuzzy.flanks[r][c]
+                f_promo = self.fuzzy.promotion_black[r][c]
+                f_drop  = self.fuzzy.drop_potential_black[r][c]
             else:
-                score = 10000   # Black wins
-        elif board.is_stalemate():
-            score = 0  # Draw
+                # mirror vertical for white side orientation
+                mr = 8 - r
+                f_center = self.fuzzy.center[mr][c]
+                f_flank = self.fuzzy.flanks[mr][c]
+                f_promo = self.fuzzy.promotion_white[mr][c]
+                f_drop  = self.fuzzy.drop_potential_white[mr][c]
+
+            # King safety uses same orientation (symmetric table)
+            f_king = self.fuzzy.king_safety[r][c]
+
+            w = self.fuzzy.weights
+            fuzzy_bonus = (w["w_center"]*f_center + w["w_flanks"]*f_flank +
+                           w["w_promo"]*f_promo + w["w_kings"]*f_king +
+                           w["w_drop"]*f_drop)
+
+            val = base + pos + base * 0.1 * fuzzy_bonus  # Increased fuzzy influence
+            if piece.color == shogi.BLACK:
+                score += val
+            else:
+                score -= val
+
+        # Pieces in hand: reduced value
+        for color in [shogi.BLACK, shogi.WHITE]:
+            hand = board.pieces_in_hand[color]
+            for ptype, cnt in hand.items():
+                pv = self.piece_values.get(ptype, 0) * 0.5 * cnt
+                score += pv if color == shogi.BLACK else -pv
+
+        # Additional strategic evaluations
+        score += self._evaluate_center_control(board)
+        score += self._evaluate_piece_activity(board)
+        score += self._evaluate_king_safety_extended(board)
+        score += self._evaluate_pawn_structure(board)
+        
+        # Checkmate check
+        if board.is_checkmate():
+            score = 10000 if board.turn == shogi.WHITE else -10000
+
+        return score
+
+    def _evaluate_piece_activity(self, board: shogi.Board) -> float:
+        """Evaluate how active/mobile pieces are"""
+        score = 0.0
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece is None:
+                continue
+            
+            # Count possible moves for this piece
+            possible_moves = 0
+            for move in board.legal_moves:
+                if move.from_square == sq:
+                    possible_moves += 1
+                    # Bonus for attacking enemy pieces
+                    target = board.piece_at(move.to_square)
+                    if target and target.color != piece.color:
+                        possible_moves += 2  # Extra bonus for attacks
+            
+            mobility_bonus = possible_moves * 0.1
+            if piece.color == shogi.BLACK:
+                score += mobility_bonus
+            else:
+                score -= mobility_bonus
         
         return score
-    
-    def _get_positional_value(self, piece: shogi.Piece, square: int) -> float:
-        """Get positional value for a piece at a given square."""
-        piece_type = piece.piece_type
-        if piece_type not in self.positional_values:
-            return 0
+
+    def _evaluate_king_safety_extended(self, board: shogi.Board) -> float:
+        """Enhanced king safety evaluation"""
+        score = 0.0
         
-        file = square % 9
-        rank = square // 9
-        
-        # For white pieces, flip the rank
-        if piece.color == shogi.WHITE:
-            rank = 8 - rank
-        
-        return self.positional_values[piece_type][rank][file]
-    
-    def _evaluate_king_safety(self, board: shogi.Board) -> float:
-        """Evaluate king safety for both sides."""
-        score = 0
-        
-        # Find kings
-        black_king_square = None
-        white_king_square = None
-        
-        for square in range(81):
-            piece = board.piece_at(square)
-            if piece and piece.piece_type == shogi.KING:
-                if piece.color == shogi.BLACK:
-                    black_king_square = square
-                else:
-                    white_king_square = square
-        
-        # Evaluate king safety (simplified)
-        if black_king_square is not None:
-            # King in corner is safer
-            file = black_king_square % 9
-            rank = black_king_square // 9
-            if file in [0, 8] or rank in [0, 8]: # Assigns +2 only if king is either on 0 or 8
-                score += 2
-        
-        if white_king_square is not None:
-            file = white_king_square % 9
-            rank = white_king_square // 9
-            if file in [0, 8] or rank in [0, 8]: # Assigns -2 only if king is either on 0 or 8
-                score -= 2
-        
-        return score
-    
-    def _evaluate_center_control(self, board: shogi.Board) -> float:
-        """Evaluate center control."""
-        score = 0
-        center_squares = [36, 37, 38, 45, 46, 47, 54, 55, 56]  # Center 3x3 area
-        
-        for square in center_squares:
-            piece = board.piece_at(square)
-            if piece is not None:
-                if piece.color == shogi.BLACK:
-                    score += 1
-                else:
-                    score -= 1
-        
-        return score
-    
-    def _order_moves(self, board: shogi.Board, moves: List[shogi.Move]) -> List[shogi.Move]:
-        """
-        Order moves to improve alpha-beta pruning efficiency.
-        Captures and promotions are tried first, then strategic drops.
-        """
-        def move_priority(move):
-            priority = 0
+        for color in [shogi.BLACK, shogi.WHITE]:
+            king_sq = None
+            for sq in range(81):
+                piece = board.piece_at(sq)
+                if piece and piece.piece_type == shogi.KING and piece.color == color:
+                    king_sq = sq
+                    break
             
-            # Captures have highest priority
-            if board.piece_at(move.to_square) is not None:
-                priority += 1000
-            
-            # Promotions have high priority
-            if move.promotion:
-                priority += 500
-            
-            # Drop moves have moderate priority, especially for key pieces
-            if move.drop_piece_type is not None:
-                drop_priority = self.piece_values.get(move.drop_piece_type, 0)
-                priority += drop_priority * 10  # Scale drop priority
+            if king_sq is None:
+                continue
                 
-                # Prefer dropping in central squares
-                file = move.to_square % 9
-                rank = move.to_square // 9
-                if 2 <= file <= 6 and 2 <= rank <= 6:  # Central area
-                    priority += 50
+            king_r = king_sq // 9
+            king_c = king_sq % 9
             
-            # Randomize among moves of same priority
-            priority += random.randint(0, 100)
+            # Penalty for exposed king
+            exposed_penalty = 0
+            # Check adjacent squares for protection
+            for dr in [-1, 0, 1]:
+                for dc in [-1, 0, 1]:
+                    if dr == 0 and dc == 0:
+                        continue
+                    nr, nc = king_r + dr, king_c + dc
+                    if 0 <= nr < 9 and 0 <= nc < 9:
+                        adj_sq = nr * 9 + nc
+                        adj_piece = board.piece_at(adj_sq)
+                        if adj_piece is None or adj_piece.color != color:
+                            exposed_penalty += 1
             
-            return priority
+            safety_score = -exposed_penalty * 2
+            if color == shogi.BLACK:
+                score += safety_score
+            else:
+                score -= safety_score
         
-        return sorted(moves, key=move_priority, reverse=True)
-    
+        return score
+
+    def _evaluate_pawn_structure(self, board: shogi.Board) -> float:
+        """Evaluate pawn structure and advancement"""
+        score = 0.0
+        
+        for color in [shogi.BLACK, shogi.WHITE]:
+            pawn_files = [False] * 9  # Track which files have pawns
+            
+            for sq in range(81):
+                piece = board.piece_at(sq)
+                if piece and piece.piece_type == shogi.PAWN and piece.color == color:
+                    file = sq % 9
+                    rank = sq // 9
+                    
+                    # Bonus for advanced pawns
+                    if color == shogi.BLACK:
+                        advancement = 8 - rank  # Black advances from rank 8 to 0
+                    else:
+                        advancement = rank  # White advances from rank 0 to 8
+                    
+                    advancement_bonus = advancement * 0.5
+                    
+                    # Check for doubled pawns (penalty)
+                    if pawn_files[file]:
+                        advancement_bonus -= 2  # Doubled pawn penalty
+                    pawn_files[file] = True
+                    
+                    if color == shogi.BLACK:
+                        score += advancement_bonus
+                    else:
+                        score -= advancement_bonus
+        
+        return score
+
+    def _get_positional_value(self, piece: shogi.Piece, square: int) -> float:
+        pt = piece.piece_type
+        if pt not in self.positional_values:
+            return 0.0
+        f = square % 9
+        r = square // 9
+        if piece.color == shogi.WHITE:
+            r = 8 - r
+        return self.positional_values[pt][r][f]
+
+    def _evaluate_center_control(self, board: shogi.Board) -> float:
+        score = 0.0
+        center = [36,37,38,45,46,47,54,55,56]
+        for sq in center:
+            pc = board.piece_at(sq)
+            if pc is None: continue
+            score += 0.5 if pc.color == shogi.BLACK else -0.5
+        return score
+
+    def _order_moves(self, board: shogi.Board, moves: List[shogi.Move]) -> List[shogi.Move]:
+        def priority(mv):
+            p = 0
+            
+            # Heavy bonus for captures
+            captured_piece = board.piece_at(mv.to_square)
+            if captured_piece is not None:
+                p += 2000 + self.piece_values.get(captured_piece.piece_type, 0) * 10
+            
+            # Promotion bonus
+            if mv.promotion:
+                p += 800
+            
+            # Drop piece evaluation
+            if mv.drop_piece_type is not None:
+                p += self.piece_values.get(mv.drop_piece_type, 0) * 15
+                f = mv.to_square % 9
+                r = mv.to_square // 9
+                # Bonus for drops in enemy territory or center
+                if 2 <= f <= 6 and 2 <= r <= 6:
+                    p += 100
+                # Extra bonus for aggressive drops (closer to enemy)
+                if board.turn == shogi.BLACK and r <= 3:
+                    p += 150
+                elif board.turn == shogi.WHITE and r >= 5:
+                    p += 150
+            
+            # Bonus for moving pieces forward
+            if mv.from_square is not None:
+                from_r = mv.from_square // 9
+                to_r = mv.to_square // 9
+                if board.turn == shogi.BLACK and to_r < from_r:  # Moving forward for black
+                    p += 50 + (from_r - to_r) * 10
+                elif board.turn == shogi.WHITE and to_r > from_r:  # Moving forward for white
+                    p += 50 + (to_r - from_r) * 10
+            
+            # Bonus for center moves
+            to_f = mv.to_square % 9
+            to_r = mv.to_square // 9
+            if 3 <= to_f <= 5 and 3 <= to_r <= 5:
+                p += 30
+            
+            # Bonus for check moves
+            board.push(mv)
+            if board.is_check():
+                p += 300
+            board.pop()
+            
+            # Small random factor to break ties
+            p += random.randint(0, 20)
+            return p
+        
+        return sorted(moves, key=priority, reverse=True)
+
     def set_difficulty(self, difficulty: str):
-        """
-        Set AI difficulty level.
-        
-        Args:
-            difficulty: 'easy', 'medium', 'hard', or 'expert'
-        """
-        difficulty_settings = {
+        settings = {
             'easy': {'depth': 2, 'time_limit': 2.0},
             'medium': {'depth': 3, 'time_limit': 3.0},
             'hard': {'depth': 4, 'time_limit': 5.0},
             'expert': {'depth': 5, 'time_limit': 8.0}
         }
-        
-        if difficulty in difficulty_settings:
-            settings = difficulty_settings[difficulty]
-            self.depth = settings['depth']
-            self.time_limit = settings['time_limit']
-            print(f"AI difficulty set to {difficulty} (depth: {self.depth}, time: {self.time_limit}s)")
+        if difficulty in settings:
+            self.depth = settings[difficulty]['depth']
+            self.time_limit = settings[difficulty]['time_limit']
         else:
-            print(f"Invalid difficulty level: {difficulty}. Using medium difficulty.")
-            self.set_difficulty('medium')
+            self.depth, self.time_limit = 3, 3.0
+
+    def reset_memory(self):
+        """Reset AI memory for new game"""
+        self.position_history.clear()
+        self.transposition_table.clear()
+        self.move_count = 0
