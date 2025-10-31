@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
@@ -121,6 +120,73 @@ def default_fuzzy_profiles():
                              weights={"w_center":0.2,"w_flanks":0.3,"w_promo":0.15,"w_kings":0.25,"w_drop":0.1})
     return profile_a, profile_b
 
+class CastlePattern:
+    """Represents a castle (囲い) pattern in Shogi."""
+    def __init__(self, name: str, pieces: List[Tuple[int, int, int]], 
+                 king_pos: Tuple[int, int], min_moves: int = 5):
+        self.name = name
+        self.pieces = pieces  # [(piece_type, row, col), ...]
+        self.king_pos = king_pos  # (row, col)
+        self.min_moves = min_moves  # Minimum moves before attempting castle
+        
+def get_castle_patterns():
+    """Define Mino and Yagura castle patterns for both sides."""
+    patterns = {}
+    
+    # Mino Castle for Black (right side)
+    patterns['mino_black'] = CastlePattern(
+        name="Mino Castle (美濃囲い)",
+        pieces=[
+            (shogi.KING, 7, 2),
+            (shogi.SILVER, 7, 3),
+            (shogi.GOLD, 8, 1),
+            (shogi.GOLD, 8, 4),
+        ],
+        king_pos=(7, 2),
+        min_moves=5
+    )
+    
+    # Yagura Castle for Black (left side)
+    patterns['yagura_black'] = CastlePattern(
+        name="Yagura Castle (矢倉囲い)",
+        pieces=[
+            (shogi.KING, 7, 7),
+            (shogi.GOLD, 7, 6),
+            (shogi.GOLD, 6, 7),
+            (shogi.SILVER, 6, 6),
+        ],
+        king_pos=(7, 7),
+        min_moves=6
+    )
+    
+    # Mino Castle for White (left side, mirrored)
+    patterns['mino_white'] = CastlePattern(
+        name="Mino Castle (美濃囲い)",
+        pieces=[
+            (shogi.KING, 1, 6),
+            (shogi.SILVER, 1, 5),
+            (shogi.GOLD, 0, 7),
+            (shogi.GOLD, 0, 4),
+        ],
+        king_pos=(1, 6),
+        min_moves=5
+    )
+    
+    # Yagura Castle for White (right side, mirrored)
+    patterns['yagura_white'] = CastlePattern(
+        name="Yagura Castle (矢倉囲い)",
+        pieces=[
+            (shogi.KING, 1, 1),
+            (shogi.GOLD, 1, 2),
+            (shogi.GOLD, 2, 1),
+            (shogi.SILVER, 2, 2),
+        ],
+        king_pos=(1, 1),
+        min_moves=6
+    )
+    
+    return patterns
+
 class ShogiAI:
     def __init__(self, depth: int = 3, time_limit: float = 5.0, fuzzy: FuzzyProfile = None):
         self.depth = depth
@@ -133,6 +199,10 @@ class ShogiAI:
         self.position_history = {}
         self.move_count = 0
 
+        self.castle_patterns = get_castle_patterns()
+        self.castle_progress = {}  # Track castle formation progress
+        self.current_castle_target = None
+
         # Material values
         self.piece_values = {
             shogi.PAWN: 1, shogi.LANCE: 3, shogi.KNIGHT: 4, shogi.SILVER: 5,
@@ -143,6 +213,25 @@ class ShogiAI:
 
         # Basic positional tables retained for piece-type flavor
         self.positional_values = self._initialize_positional_values()
+
+
+    def get_castle_completion(self, board: shogi.Board, pattern_name: str) -> float:
+        """Get completion percentage of a castle pattern."""
+        if pattern_name not in self.castle_patterns:
+            return 0.0
+        
+        pattern = self.castle_patterns[pattern_name]
+        color = shogi.BLACK if 'black' in pattern_name else shogi.WHITE
+        
+        completion = 0
+        for piece_type, req_r, req_c in pattern.pieces:
+            sq = req_r * 9 + req_c
+            piece = board.piece_at(sq)
+            if piece and piece.piece_type == piece_type and piece.color == color:
+                completion += 1
+        
+        return completion / len(pattern.pieces)
+
 
     def set_fuzzy_profile(self, fuzzy: FuzzyProfile):
         self.fuzzy = fuzzy
@@ -469,7 +558,27 @@ class ShogiAI:
 
     def _order_moves(self, board: shogi.Board, moves: List[shogi.Move]) -> List[shogi.Move]:
         def priority(mv):
-            p = 0
+            # Castle formation bonus
+            castle_bonus = 0
+            if board.move_number >= 5 and mv.from_square is not None:
+                color = shogi.BLACK if board.turn == shogi.BLACK else shogi.WHITE
+                target_castle, _ = self.evaluate_castle_formation(board, color)
+                
+                if target_castle:
+                    pattern = self.castle_patterns[target_castle]
+                    to_r = mv.to_square // 9
+                    to_c = mv.to_square % 9
+                    moving_piece = board.piece_at(mv.from_square)
+                    
+                    if moving_piece:
+                        # Check if this move contributes to castle formation
+                        for piece_type, req_r, req_c in pattern.pieces:
+                            if (moving_piece.piece_type == piece_type and 
+                                to_r == req_r and to_c == req_c):
+                                castle_bonus = 200  # High priority for castle formation
+                                break
+            
+            p = castle_bonus
             
             # Heavy bonus for captures
             captured_piece = board.piece_at(mv.to_square)

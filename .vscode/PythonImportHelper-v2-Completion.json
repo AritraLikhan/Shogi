@@ -1,0 +1,966 @@
+[
+    {
+        "label": "collections",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "collections",
+        "description": "collections",
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "socket",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "socket",
+        "description": "socket",
+        "detail": "socket",
+        "documentation": {}
+    },
+    {
+        "label": "threading",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "shogi",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shogi",
+        "description": "shogi",
+        "detail": "shogi",
+        "documentation": {}
+    },
+    {
+        "label": "CSA",
+        "importPath": "shogi",
+        "description": "shogi",
+        "isExtraImport": true,
+        "detail": "shogi",
+        "documentation": {}
+    },
+    {
+        "label": "KIF",
+        "importPath": "shogi",
+        "description": "shogi",
+        "isExtraImport": true,
+        "detail": "shogi",
+        "documentation": {}
+    },
+    {
+        "label": "Person",
+        "importPath": "shogi",
+        "description": "shogi",
+        "isExtraImport": true,
+        "detail": "shogi",
+        "documentation": {}
+    },
+    {
+        "label": "codecs",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "codecs",
+        "description": "codecs",
+        "detail": "codecs",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "unittest",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "unittest",
+        "description": "unittest",
+        "detail": "unittest",
+        "documentation": {}
+    },
+    {
+        "label": "patch",
+        "importPath": "mock",
+        "description": "mock",
+        "isExtraImport": true,
+        "detail": "mock",
+        "documentation": {}
+    },
+    {
+        "label": "shutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shutil",
+        "description": "shutil",
+        "detail": "shutil",
+        "documentation": {}
+    },
+    {
+        "label": "tempfile",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tempfile",
+        "description": "tempfile",
+        "detail": "tempfile",
+        "documentation": {}
+    },
+    {
+        "label": "tkinter",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "ttk",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "isExtraImport": true,
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "messagebox",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "isExtraImport": true,
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "ttk",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "isExtraImport": true,
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "messagebox",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "isExtraImport": true,
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "font",
+        "importPath": "tkinter",
+        "description": "tkinter",
+        "isExtraImport": true,
+        "detail": "tkinter",
+        "documentation": {}
+    },
+    {
+        "label": "shogi_gui_enhanced",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shogi_gui_enhanced",
+        "description": "shogi_gui_enhanced",
+        "detail": "shogi_gui_enhanced",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "ShogiAI",
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "isExtraImport": true,
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "default_fuzzy_profiles",
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "isExtraImport": true,
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "FuzzyProfile",
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "isExtraImport": true,
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "ShogiAI",
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "isExtraImport": true,
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "COLORS",
+        "kind": 5,
+        "importPath": "shogi.Consts",
+        "description": "shogi.Consts",
+        "peekOfCode": "COLORS = [BLACK, WHITE] = range(2)\nPIECE_TYPES_WITH_NONE = [\n    NONE,\n    PAWN,\n    LANCE,\n    KNIGHT,\n    SILVER,\n    GOLD,\n    BISHOP,\n    ROOK,",
+        "detail": "shogi.Consts",
+        "documentation": {}
+    },
+    {
+        "label": "PIECE_TYPES_WITH_NONE",
+        "kind": 5,
+        "importPath": "shogi.Consts",
+        "description": "shogi.Consts",
+        "peekOfCode": "PIECE_TYPES_WITH_NONE = [\n    NONE,\n    PAWN,\n    LANCE,\n    KNIGHT,\n    SILVER,\n    GOLD,\n    BISHOP,\n    ROOK,\n    KING,",
+        "detail": "shogi.Consts",
+        "documentation": {}
+    },
+    {
+        "label": "]",
+        "kind": 5,
+        "importPath": "shogi.Consts",
+        "description": "shogi.Consts",
+        "peekOfCode": "] = range(15)\nPIECE_TYPES = [\n    PAWN,\n    LANCE,\n    KNIGHT,\n    SILVER,\n    GOLD,\n    BISHOP,\n    ROOK,\n    KING,",
+        "detail": "shogi.Consts",
+        "documentation": {}
+    },
+    {
+        "label": "PIECE_TYPES",
+        "kind": 5,
+        "importPath": "shogi.Consts",
+        "description": "shogi.Consts",
+        "peekOfCode": "PIECE_TYPES = [\n    PAWN,\n    LANCE,\n    KNIGHT,\n    SILVER,\n    GOLD,\n    BISHOP,\n    ROOK,\n    KING,\n    PROM_PAWN,",
+        "detail": "shogi.Consts",
+        "documentation": {}
+    },
+    {
+        "label": "Parser",
+        "kind": 6,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "class Parser:\n    @staticmethod\n    def parse_file(path):\n        with open(path) as f:\n            return Parser.parse_str(f.read())\n    @staticmethod\n    def parse_str(csa_str):  # noqa: C901\n        line_no = 1\n        sfen = None\n        board = None",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "Exporter",
+        "kind": 6,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "class Exporter:\n    @staticmethod\n    def sfen(pieces, pieces_in_hand, current_turn_char, move_count):\n        sfen = []\n        empty = 0\n        # Position part.\n        for square in shogi.SQUARES:\n            piece_tuple = pieces[square]\n            if piece_tuple is None:\n                empty += 1",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "TCPProtocol",
+        "kind": 6,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "class TCPProtocol:\n    def __init__(self, host=None, port=0):\n        if host:\n            self.open(host, port)\n    def open(self, host, port=0):\n        if not port:\n            port = DEFAULT_PORT\n        self.host = host\n        self.port = port\n        self.recv_buf = \"\"",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "CSAHeartbeat",
+        "kind": 6,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "class CSAHeartbeat(threading.Thread):\n    def __init__(self, ping_target, sleep_duration, ping_duration):\n        super(CSAHeartbeat, self).__init__()\n        self.ping_timer = 0\n        self.ping_target = ping_target\n        self.sleep_duration = sleep_duration\n        self.ping_duration = ping_duration\n    def run(self):\n        if self.ping_timer >= self.ping_duration:\n            self.ping_target.ping()",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "DEFAULT_PORT",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "DEFAULT_PORT = 4081\nPING_SLEEP_DURATION = 1\nPING_DURATION = 60\nSOCKET_RECV_SIZE = 4096\nBLOCK_RECV_SLEEP_DURATION = 0.1\nCOLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "PING_SLEEP_DURATION",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "PING_SLEEP_DURATION = 1\nPING_DURATION = 60\nSOCKET_RECV_SIZE = 4096\nBLOCK_RECV_SLEEP_DURATION = 0.1\nCOLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "PING_DURATION",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "PING_DURATION = 60\nSOCKET_RECV_SIZE = 4096\nBLOCK_RECV_SLEEP_DURATION = 0.1\nCOLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "SOCKET_RECV_SIZE",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "SOCKET_RECV_SIZE = 4096\nBLOCK_RECV_SLEEP_DURATION = 0.1\nCOLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",\n    \"51\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "BLOCK_RECV_SLEEP_DURATION",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "BLOCK_RECV_SLEEP_DURATION = 0.1\nCOLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",\n    \"51\",\n    \"41\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "COLOR_SYMBOLS",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "COLOR_SYMBOLS = [\"+\", \"-\"]\nPIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",\n    \"51\",\n    \"41\",\n    \"31\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "PIECE_SYMBOLS",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "PIECE_SYMBOLS = [\"* \", \"FU\", \"KY\", \"KE\", \"GI\", \"KI\", \"KA\", \"HI\", \"OU\", \"TO\", \"NY\", \"NK\", \"NG\", \"UM\", \"RY\"]\nSQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",\n    \"51\",\n    \"41\",\n    \"31\",\n    \"21\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "SQUARE_NAMES",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "SQUARE_NAMES = [\n    \"91\",\n    \"81\",\n    \"71\",\n    \"61\",\n    \"51\",\n    \"41\",\n    \"31\",\n    \"21\",\n    \"11\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "SERVER_MESSAGE_SYMBOLS",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "SERVER_MESSAGE_SYMBOLS = [\n    # '#' prefixed\n    \"WIN\",\n    \"LOSE\",\n    \"DRAW\",\n    \"SENNICHITE\",\n    \"OUTE_SENNICHITE\",\n    \"ILLEGAL_MOVE\",\n    \"TIME_UP\",\n    \"RESIGN\",",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "SERVER_MESSAGES",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "SERVER_MESSAGES = [\n    WIN,\n    LOSE,\n    DRAW,\n    SENNICHITE,\n    OUTE_SENNICHITE,\n    ILLEGAL_MOVE,\n    TIME_UP,\n    REGISN,\n    JISHOGI,",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "]",
+        "kind": 5,
+        "importPath": "shogi.CSA",
+        "description": "shogi.CSA",
+        "peekOfCode": "] = range(0, len(SERVER_MESSAGE_SYMBOLS))\nclass Parser:\n    @staticmethod\n    def parse_file(path):\n        with open(path) as f:\n            return Parser.parse_str(f.read())\n    @staticmethod\n    def parse_str(csa_str):  # noqa: C901\n        line_no = 1\n        sfen = None",
+        "detail": "shogi.CSA",
+        "documentation": {}
+    },
+    {
+        "label": "ParserException",
+        "kind": 6,
+        "importPath": "shogi.KIF",
+        "description": "shogi.KIF",
+        "peekOfCode": "class ParserException(Exception):\n    pass\nclass Parser:\n    MOVE_RE = re.compile(\n        r\"\\A *[0-9]+\\s+(中断|投了|持将棋|先日手|詰み|切れ負け|反則勝ち|反則負け|(([１２３４５６７８９])([零一二三四五六七八九])|同　)([歩香桂銀金角飛玉と杏圭全馬龍])(打|(成?)\\(([0-9])([0-9])\\)))\\s*(\\([ /:0-9]+\\))?\\s*\\Z\"\n    )\n    HANDYCAP_SFENS = {\n        \"平手\": shogi.STARTING_SFEN,\n        \"香落ち\": \"lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",\n        \"右香落ち\": \"1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",",
+        "detail": "shogi.KIF",
+        "documentation": {}
+    },
+    {
+        "label": "Parser",
+        "kind": 6,
+        "importPath": "shogi.KIF",
+        "description": "shogi.KIF",
+        "peekOfCode": "class Parser:\n    MOVE_RE = re.compile(\n        r\"\\A *[0-9]+\\s+(中断|投了|持将棋|先日手|詰み|切れ負け|反則勝ち|反則負け|(([１２３４５６７８９])([零一二三四五六七八九])|同　)([歩香桂銀金角飛玉と杏圭全馬龍])(打|(成?)\\(([0-9])([0-9])\\)))\\s*(\\([ /:0-9]+\\))?\\s*\\Z\"\n    )\n    HANDYCAP_SFENS = {\n        \"平手\": shogi.STARTING_SFEN,\n        \"香落ち\": \"lnsgkgsn1/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",\n        \"右香落ち\": \"1nsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",\n        \"角落ち\": \"lnsgkgsnl/1r7/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",\n        \"飛車落ち\": \"lnsgkgsnl/7b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1\",",
+        "detail": "shogi.KIF",
+        "documentation": {}
+    },
+    {
+        "label": "ExporterException",
+        "kind": 6,
+        "importPath": "shogi.KIF",
+        "description": "shogi.KIF",
+        "peekOfCode": "class ExporterException(Exception):\n    pass\nclass Exporter:\n    FULL_WIDTH_NUMBER = \"１２３４５６７８９\"\n    JAPANESE_NUMBER = \"一二三四五六七八九\"\n    @staticmethod\n    def kif(sfen_summary):\n        names = sfen_summary[\"names\"]\n        kif = \"\"\n        kif += \"開始日時： \\r\\n\"",
+        "detail": "shogi.KIF",
+        "documentation": {}
+    },
+    {
+        "label": "Exporter",
+        "kind": 6,
+        "importPath": "shogi.KIF",
+        "description": "shogi.KIF",
+        "peekOfCode": "class Exporter:\n    FULL_WIDTH_NUMBER = \"１２３４５６７８９\"\n    JAPANESE_NUMBER = \"一二三四五六七八九\"\n    @staticmethod\n    def kif(sfen_summary):\n        names = sfen_summary[\"names\"]\n        kif = \"\"\n        kif += \"開始日時： \\r\\n\"\n        kif = kif + \"終了日時： \\r\\n\"\n        kif += \"手合割：平手\\r\\n\"",
+        "detail": "shogi.KIF",
+        "documentation": {}
+    },
+    {
+        "label": "Move",
+        "kind": 6,
+        "importPath": "shogi.Move",
+        "description": "shogi.Move",
+        "peekOfCode": "class Move(object):\n    \"\"\"\n    Represents a move from a square to a square and possibly the promotion piece\n    type.\n    Null moves are supported.\n    \"\"\"\n    def __init__(self, from_square, to_square, promotion=False, drop_piece_type=None):\n        # if from_square is None, it's a drop and\n        self.from_square = from_square\n        self.to_square = to_square",
+        "detail": "shogi.Move",
+        "documentation": {}
+    },
+    {
+        "label": "SQUARE_NAMES",
+        "kind": 5,
+        "importPath": "shogi.Move",
+        "description": "shogi.Move",
+        "peekOfCode": "SQUARE_NAMES = [\n    \"9a\", \"8a\", \"7a\", \"6a\", \"5a\", \"4a\", \"3a\", \"2a\", \"1a\",\n    \"9b\", \"8b\", \"7b\", \"6b\", \"5b\", \"4b\", \"3b\", \"2b\", \"1b\",\n    \"9c\", \"8c\", \"7c\", \"6c\", \"5c\", \"4c\", \"3c\", \"2c\", \"1c\",\n    \"9d\", \"8d\", \"7d\", \"6d\", \"5d\", \"4d\", \"3d\", \"2d\", \"1d\",\n    \"9e\", \"8e\", \"7e\", \"6e\", \"5e\", \"4e\", \"3e\", \"2e\", \"1e\",\n    \"9f\", \"8f\", \"7f\", \"6f\", \"5f\", \"4f\", \"3f\", \"2f\", \"1f\",\n    \"9g\", \"8g\", \"7g\", \"6g\", \"5g\", \"4g\", \"3g\", \"2g\", \"1g\",\n    \"9h\", \"8h\", \"7h\", \"6h\", \"5h\", \"4h\", \"3h\", \"2h\", \"1h\",\n    \"9i\", \"8i\", \"7i\", \"6i\", \"5i\", \"4i\", \"3i\", \"2i\", \"1i\",",
+        "detail": "shogi.Move",
+        "documentation": {}
+    },
+    {
+        "label": "Name",
+        "kind": 6,
+        "importPath": "shogi.Person",
+        "description": "shogi.Person",
+        "peekOfCode": "class Name:\n    @staticmethod\n    def normalize(name):\n        if name is None:\n            return None\n        name = name.translate(\n            {\n                ord(\" \"): None,  # space\n                ord(\"　\"): None,  # full-width space\n                ord(\"・\"): None,  # full-width center dot",
+        "detail": "shogi.Person",
+        "documentation": {}
+    },
+    {
+        "label": "NAME_SUFFIX_RE",
+        "kind": 5,
+        "importPath": "shogi.Person",
+        "description": "shogi.Person",
+        "peekOfCode": "NAME_SUFFIX_RE = re.compile(\n    r\"(小\\d|奨励会|アマ|さん|[四五六七八九]段|[一二三四五六]冠|前?(名人|棋聖|王位|王座|王将|棋王|九段|十段|竜王|nhk杯|新人王|女王|女流王座|女流名人|女流王将|女流王位|倉敷藤花)+)$\"\n)\nNAMES_OF_PROFESSIONAL_PLAYERS = [\n    # old\n    \"天野宗歩\",\n    \"小野五平\",\n    \"溝呂木光治\",\n    \"小菅剣之助\",\n    \"関根金次郎\",",
+        "detail": "shogi.Person",
+        "documentation": {}
+    },
+    {
+        "label": "NAMES_OF_PROFESSIONAL_PLAYERS",
+        "kind": 5,
+        "importPath": "shogi.Person",
+        "description": "shogi.Person",
+        "peekOfCode": "NAMES_OF_PROFESSIONAL_PLAYERS = [\n    # old\n    \"天野宗歩\",\n    \"小野五平\",\n    \"溝呂木光治\",\n    \"小菅剣之助\",\n    \"関根金次郎\",\n    \"花田長太郎\",\n    \"小林東伯斎\",\n    \"阪田三吉\",",
+        "detail": "shogi.Person",
+        "documentation": {}
+    },
+    {
+        "label": "NAMES_OF_LADIES_PROFESSIONAL_PLAYERS",
+        "kind": 5,
+        "importPath": "shogi.Person",
+        "description": "shogi.Person",
+        "peekOfCode": "NAMES_OF_LADIES_PROFESSIONAL_PLAYERS = [\n    \"蛸島彰子\",\n    \"関根紀代子\",\n    \"多田佳子\",\n    \"山下カズ子\",\n    \"寺下紀子\",\n    \"村山幸子\",\n    \"杉崎里子\",\n    \"福崎睦美\",\n    \"佐藤寿子\",",
+        "detail": "shogi.Person",
+        "documentation": {}
+    },
+    {
+        "label": "Piece",
+        "kind": 6,
+        "importPath": "shogi.Piece",
+        "description": "shogi.Piece",
+        "peekOfCode": "class Piece(object):\n    def __init__(self, piece_type, color):\n        if piece_type is None:\n            raise ValueError(\"Piece type must be set\")\n        if color is None:\n            raise ValueError(\"Color must be set\")\n        self.piece_type = piece_type\n        self.color = color\n    def symbol(self):\n        \"\"\"",
+        "detail": "shogi.Piece",
+        "documentation": {}
+    },
+    {
+        "label": "PIECE_SYMBOLS",
+        "kind": 5,
+        "importPath": "shogi.Piece",
+        "description": "shogi.Piece",
+        "peekOfCode": "PIECE_SYMBOLS = [\"\", \"p\", \"l\", \"n\", \"s\", \"g\", \"b\", \"r\", \"k\", \"+p\", \"+l\", \"+n\", \"+s\", \"+b\", \"+r\"]\nPIECE_JAPANESE_SYMBOLS = [\"\", \"歩\", \"香\", \"桂\", \"銀\", \"金\", \"角\", \"飛\", \"玉\", \"と\", \"杏\", \"圭\", \"全\", \"馬\", \"龍\"]\nclass Piece(object):\n    def __init__(self, piece_type, color):\n        if piece_type is None:\n            raise ValueError(\"Piece type must be set\")\n        if color is None:\n            raise ValueError(\"Color must be set\")\n        self.piece_type = piece_type\n        self.color = color",
+        "detail": "shogi.Piece",
+        "documentation": {}
+    },
+    {
+        "label": "PIECE_JAPANESE_SYMBOLS",
+        "kind": 5,
+        "importPath": "shogi.Piece",
+        "description": "shogi.Piece",
+        "peekOfCode": "PIECE_JAPANESE_SYMBOLS = [\"\", \"歩\", \"香\", \"桂\", \"銀\", \"金\", \"角\", \"飛\", \"玉\", \"と\", \"杏\", \"圭\", \"全\", \"馬\", \"龍\"]\nclass Piece(object):\n    def __init__(self, piece_type, color):\n        if piece_type is None:\n            raise ValueError(\"Piece type must be set\")\n        if color is None:\n            raise ValueError(\"Color must be set\")\n        self.piece_type = piece_type\n        self.color = color\n    def symbol(self):",
+        "detail": "shogi.Piece",
+        "documentation": {}
+    },
+    {
+        "label": "BoardTestCase",
+        "kind": 6,
+        "importPath": "tests.board_test",
+        "description": "tests.board_test",
+        "peekOfCode": "class BoardTestCase(unittest.TestCase):\n    def test_default(self):\n        board_none = shogi.Board()\n        board_sfen = shogi.Board(shogi.STARTING_SFEN)\n        self.assertEqual(board_none, board_sfen)\n        self.assertEqual(board_none.sfen(), shogi.STARTING_SFEN)\n        self.assertEqual(str(board_none), str(board_sfen))\n        self.assertEqual(repr(board_none), repr(board_sfen))\n        self.assertEqual(board_none.turn, shogi.BLACK)\n    def test_stalemate(self):",
+        "detail": "tests.board_test",
+        "documentation": {}
+    },
+    {
+        "label": "ParserTest",
+        "kind": 6,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "class ParserTest(unittest.TestCase):\n    def parse_str_test(self):\n        result = CSA.Parser.parse_str(TEST_CSA)\n        self.assertEqual(result[0], TEST_CSA_SUMMARY)\n    def parse_str_test_with_PI(self):\n        result = CSA.Parser.parse_str(TEST_CSA_WITH_PI)\n        self.assertEqual(result[0], TEST_CSA_SUMMARY_WITH_PI)\nTEST_SUMMARY = {\n    \"names\": [\"kiki_no_onaka_black\", \"kiki_no_omata_white\"],\n    \"sfen\": \"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\",",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TCPProtocolTest",
+        "kind": 6,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "class TCPProtocolTest(unittest.TestCase):\n    def setUp(self):\n        patchers = []\n        patchers.append(patch.object(CSA.TCPProtocol, \"connect\", return_value=None))\n        patchers.append(patch.object(CSA.TCPProtocol, \"write\"))\n        patchers.append(patch.object(CSA.TCPProtocol, \"read\", return_value=0))\n        for patcher in patchers:\n            self.addCleanup(patcher.stop)\n            patcher.start()\n        self.maxDiff = None",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_CSA",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_CSA = \"\"\"'----------棋譜ファイルの例\"example.csa\"-----------------\n'バージョン\nV2.2\n'対局者名\nN+NAKAHARA\nN-YONENAGA\n'棋譜情報\n'棋戦名\n$EVENT:13th World Computer Shogi Championship\n'対局場所",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_CSA_SUMMARY",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_CSA_SUMMARY = {\n    \"moves\": [\"2g2f\", \"3c3d\", \"7g7f\"],\n    \"sfen\": \"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\",\n    \"names\": [\"NAKAHARA\", \"YONENAGA\"],\n    \"win\": \"b\",\n}\nTEST_CSA_WITH_PI = \"\"\"\nV2.2\nN+先手\nN-後手",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_CSA_WITH_PI",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_CSA_WITH_PI = \"\"\"\nV2.2\nN+先手\nN-後手\n$START_TIME:2020/05/04 12:40:52\nPI82HI22KA\n+\n+7776FU\nT1\n-8384FU",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_CSA_SUMMARY_WITH_PI",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_CSA_SUMMARY_WITH_PI = {\n    \"moves\": [\"7g7f\", \"8c8d\"],\n    \"sfen\": \"lnsgkgsnl/9/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\",\n    \"names\": [\"先手\", \"後手\"],\n    \"win\": \"w\",\n}\nclass ParserTest(unittest.TestCase):\n    def parse_str_test(self):\n        result = CSA.Parser.parse_str(TEST_CSA)\n        self.assertEqual(result[0], TEST_CSA_SUMMARY)",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_SUMMARY",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_SUMMARY = {\n    \"names\": [\"kiki_no_onaka_black\", \"kiki_no_omata_white\"],\n    \"sfen\": \"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\",\n    \"moves\": [],\n    \"time\": {\"Time_Unit\": \"1sec\", \"Total_Time\": \"900\", \"Byoyomi\": \"0\", \"Least_Time_Per_Move\": \"1\"},\n}\nTEST_SUMMARY_STR = \"\"\"BEGIN Game_Summary\nProtocol_Version:1.1\nProtocol_Mode:Server\nFormat:Shogi 1.0",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_SUMMARY_STR",
+        "kind": 5,
+        "importPath": "tests.csa_test",
+        "description": "tests.csa_test",
+        "peekOfCode": "TEST_SUMMARY_STR = \"\"\"BEGIN Game_Summary\nProtocol_Version:1.1\nProtocol_Mode:Server\nFormat:Shogi 1.0\nDeclaration:Jishogi 1.1\nGame_ID:20150505-CSA25-3-5-7\nName+:kiki_no_onaka_black\nName-:kiki_no_omata_white\nYour_Turn:-\nRematch_On_Draw:NO",
+        "detail": "tests.csa_test",
+        "documentation": {}
+    },
+    {
+        "label": "ParserTest",
+        "kind": 6,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "class ParserTest(unittest.TestCase):\n    def test_parse_str(self):\n        result = KIF.Parser.parse_str(TEST_KIF_STR)\n        self.assertEqual(result[0], TEST_KIF_RESULT)\n    def test_parse_str_with_time(self):\n        result = KIF.Parser.parse_str(TEST_KIF_STR_WITH_TIME)\n        self.assertEqual(result[0], TEST_KIF_WITH_TIME_RESULT)\n    def test_parse_str_81dojo(self):\n        result = KIF.Parser.parse_str(TEST_KIF_81DOJO)\n        self.assertEqual(result[0], TEST_KIF_81DOJO_RESULT)",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "ExporterTest",
+        "kind": 6,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "class ExporterTest(unittest.TestCase):\n    def test_parse_str(self):\n        result = KIF.Parser.parse_str(TEST_KIF_EXPORTED_TO_KIF)\n        self.assertEqual(result[0], TEST_KIF_RESULT)\n    def test_export_to_kif(self):\n        result = KIF.Exporter.kif(TEST_KIF_RESULT)\n        self.assertEqual(result, TEST_KIF_EXPORTED_TO_KIF)\n    def test_issue_61(self):\n        with self.assertRaises(KIF.ExporterException):\n            # Valid win must be WHITE",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_STR",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_STR = \"\"\"開始日時：2006/12/15 21:03\\r\n消費時間：▲359△359\\r\n棋戦：順位戦\\r\n戦型：四間飛車\\r\n\\r\n場所：東京「将棋会館」\\r\n\\r\n持ち時間：6時間\\r\n\\r\n手合割：平手\\r",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_STR_WITH_TIME",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_STR_WITH_TIME = \"\"\"# --- Kifu for Windows (HTTP) V6.54 棋譜ファイル ---\n対局ID：1234\\r\n開始日時：2013/08/08 09:00\\r\n終了日時：2013/08/09 17:40\\r\n表題：王位戦\\r\n棋戦：第５４期王位戦七番勝負　第４局\\r\n持ち時間：各８時間\\r\n消費時間：78▲452△442\\r\n場所：ホテル日航福岡\\r\n図：投了\\r",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_81DOJO",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_81DOJO = \"\"\"#KIF version=2.0 encoding=UTF-8\\r\n開始日時：2020/12/31\\r\n場所：81Dojo\\r\n持ち時間：0分+10秒\\r\n手合割：平手\\r\n先手：KikiNoOmata\\r\n後手：XiaoNoOmata\\r\n手数----指手---------消費時間--\\r\n1   ７六歩(77)   (0:2/0:0:2)\\r\n2   ３四歩(33)   (0:5/0:0:5)\\r",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_CUSTOM_BOARD",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_CUSTOM_BOARD = \"\"\"# ----  Kifu for Windows V4.01β 棋譜ファイル  ----\n# ファイル名：D:\\\\b\\\\temp\\\\M2TOK141\\\\KIFU\\\\1t120600-1.kif\n棋戦：１手詰\n戦型：なし\n手合割：平手　　\n後手の持駒：飛　角　金四　銀三　桂四　香三　歩十七　\n  ９ ８ ７ ６ ５ ４ ３ ２ １\n+---------------------------+\n| ・ ・ ・ ・ ・ ・ ・ ・v香|一\n| ・ ・ ・ ・ 飛 馬 ・ ・v玉|二",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_CUSTOM_BOARD_SHOGI_GUI",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_CUSTOM_BOARD_SHOGI_GUI = \"\"\"#KIF version=2.0 encoding=UTF-8\n開始日時：2024/02/06 17:26:03\n後手の持駒：飛 角 金四 銀三 桂四 香三 歩十七\n  ９ ８ ７ ６ ５ ４ ３ ２ １\n+---------------------------+\n| ・ ・ ・ ・ ・ ・ ・ ・v香|一\n| ・ ・ ・ ・ 飛 馬 ・ ・v玉|二\n| ・ ・ ・ ・ ・ ・ ・v歩 ・|三\n| ・ ・ ・ ・ ・ ・v銀 ・ ・|四\n| ・ ・ ・ ・ ・ ・ ・ ・ ・|五",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_EXPORTED_TO_KIF",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_EXPORTED_TO_KIF = \"\"\"開始日時： \\r\n終了日時： \\r\n手合割：平手\\r\n先手：羽生善治\\r\n後手：藤井猛\\r\n手数----指手---------消費時間-- \\r\n1 ７六歩(77) \\r\n2 ３四歩(33) \\r\n3 ２六歩(27) \\r\n4 ４四歩(43) \\r",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_RESULT",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_RESULT = {\n    \"moves\": [\n        \"7g7f\",\n        \"3c3d\",\n        \"2g2f\",\n        \"4c4d\",\n        \"3i4h\",\n        \"8b4b\",\n        \"5i6h\",\n        \"5a6b\",",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_WITH_TIME_RESULT",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_WITH_TIME_RESULT = {\n    \"moves\": [\n        \"7g7f\",\n        \"3c3d\",\n        \"2g2f\",\n        \"8c8d\",\n        \"2f2e\",\n        \"8d8e\",\n        \"6i7h\",\n        \"4a3b\",",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_81DOJO_RESULT",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_81DOJO_RESULT = {\n    \"moves\": [\"7g7f\", \"3c3d\", \"7f7e\", \"4c4d\", \"2h7h\", \"8b4b\", \"7i6h\", \"7a8b\", \"7e7d\", \"7c7d\", \"7h7d\"],\n    \"sfen\": \"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\",\n    \"names\": [\"KikiNoOmata\", \"XiaoNoOmata\"],\n    \"win\": \"b\",\n}\nTEST_KIF_CUSTOM_BOARD_RESULT = {\n    \"names\": [\"大内延介\", \"最新詰将棋２００選\"],\n    \"sfen\": \"8l/4R+B2k/7p1/6s2/9/9/9/9/9 w 1r1b4g3s4n3l17p 1\",\n    \"moves\": [\"4b3a\"],",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "TEST_KIF_CUSTOM_BOARD_RESULT",
+        "kind": 5,
+        "importPath": "tests.kif_test",
+        "description": "tests.kif_test",
+        "peekOfCode": "TEST_KIF_CUSTOM_BOARD_RESULT = {\n    \"names\": [\"大内延介\", \"最新詰将棋２００選\"],\n    \"sfen\": \"8l/4R+B2k/7p1/6s2/9/9/9/9/9 w 1r1b4g3s4n3l17p 1\",\n    \"moves\": [\"4b3a\"],\n    \"win\": \"-\",\n}\nclass ParserTest(unittest.TestCase):\n    def test_parse_str(self):\n        result = KIF.Parser.parse_str(TEST_KIF_STR)\n        self.assertEqual(result[0], TEST_KIF_RESULT)",
+        "detail": "tests.kif_test",
+        "documentation": {}
+    },
+    {
+        "label": "MoveTestCase",
+        "kind": 6,
+        "importPath": "tests.move_test",
+        "description": "tests.move_test",
+        "peekOfCode": "class MoveTestCase(unittest.TestCase):\n    def test_issue_8(self):\n        move = shogi.Move.from_usi(\"9a9b\")\n        self.assertEqual(move.__hash__(), 9)\nif __name__ == \"__main__\":\n    unittest.main()",
+        "detail": "tests.move_test",
+        "documentation": {}
+    },
+    {
+        "label": "PerftTestCase",
+        "kind": 6,
+        "importPath": "tests.perft_test",
+        "description": "tests.perft_test",
+        "peekOfCode": "class PerftTestCase(unittest.TestCase):\n    def test_1(self):\n        board = shogi.Board()\n        self.assertEqual(perft(board, 1), 30)\n        self.assertEqual(perft(board, 2), 900)\n    def test_2(self):\n        board = shogi.Board(shogi.STARTING_SFEN)\n        self.assertEqual(perft(board, 1), 30)\n        self.assertEqual(perft(board, 2), 900)\n    def test_3(self):",
+        "detail": "tests.perft_test",
+        "documentation": {}
+    },
+    {
+        "label": "perft",
+        "kind": 2,
+        "importPath": "tests.perft_test",
+        "description": "tests.perft_test",
+        "peekOfCode": "def perft(board, depth):\n    if depth > 1:\n        count = 0\n        for move in board.pseudo_legal_moves:\n            board.push(move)\n            if not board.was_suicide() and not board.was_check_by_dropping_pawn(move):\n                count += perft(board, depth - 1)\n            board.pop()\n        return count\n    else:",
+        "detail": "tests.perft_test",
+        "documentation": {}
+    },
+    {
+        "label": "NameTestCase",
+        "kind": 6,
+        "importPath": "tests.person_test",
+        "description": "tests.person_test",
+        "peekOfCode": "class NameTestCase(unittest.TestCase):\n    def test_is_professional(self):\n        result = Person.Name.is_professional(\"羽生　善治 名人・棋聖・王位・王座\")\n        self.assertTrue(result)",
+        "detail": "tests.person_test",
+        "documentation": {}
+    },
+    {
+        "label": "debug_pawn_drops",
+        "kind": 2,
+        "importPath": "debug_pawn_drops",
+        "description": "debug_pawn_drops",
+        "peekOfCode": "def debug_pawn_drops():\n    \"\"\"Debug pawn drop availability\"\"\"\n    print(\"=== Debug Pawn Drop Issues ===\\n\")\n    # Create a board similar to what's shown in the screenshot\n    board = shogi.Board()\n    # Make some moves to get to a similar position\n    moves = ['7g7f', '3c3d', '2g2f', '8c8d']\n    for move_str in moves:\n        move = shogi.Move.from_usi(move_str)\n        if move in board.legal_moves:",
+        "detail": "debug_pawn_drops",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "example_game",
+        "description": "example_game",
+        "peekOfCode": "def main():\n    print(\"=== Python Shogi Game Example ===\\n\")\n    # Create a new board (starts with the initial position)\n    board = shogi.Board()\n    print(\"Initial position:\")\n    print(board.kif_str())\n    print(f\"Current turn: {'Black' if board.turn == shogi.BLACK else 'White'}\")\n    print(f\"Move number: {board.move_number}\")\n    print()\n    # Show some legal moves",
+        "detail": "example_game",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "launch_shogi",
+        "description": "launch_shogi",
+        "peekOfCode": "def main():\n    print(\"=== Python Shogi Game Launcher ===\\n\")\n    print(\"Choose your preferred interface:\")\n    print(\"1. Console version (text-based)\")\n    print(\"2. Enhanced GUI version (with graphics)\")\n    print(\"3. Exit\")\n    print()\n    while True:\n        try:\n            choice = input(\"Enter your choice (1-3): \").strip()",
+        "detail": "launch_shogi",
+        "documentation": {}
+    },
+    {
+        "label": "show_mode_selection",
+        "kind": 2,
+        "importPath": "launch_shogi_ai",
+        "description": "launch_shogi_ai",
+        "peekOfCode": "def show_mode_selection():\n    \"\"\"Show mode selection dialog\"\"\"\n    root = tk.Tk()\n    root.title(\"Shogi Game Launcher\")\n    root.geometry(\"420x360\")\n    root.configure(bg='#f0f0f0')\n    root.eval('tk::PlaceWindow . center')\n    main_frame = ttk.Frame(root, padding=\"20\")\n    main_frame.pack(fill=tk.BOTH, expand=True)\n    title_label = ttk.Label(",
+        "detail": "launch_shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "start_game",
+        "kind": 2,
+        "importPath": "launch_shogi_ai",
+        "description": "launch_shogi_ai",
+        "peekOfCode": "def start_game(parent, mode):\n    \"\"\"Start the game with the selected mode\"\"\"\n    parent.destroy()\n    root = tk.Tk()\n    app = shogi_gui_enhanced.EnhancedShogiGUI(root)\n    app.game_mode = mode\n    app.mode_var.set(mode)\n    app.update_display()\n    if mode == \"human_vs_ai\":\n        app.log_message(\"🤖 Starting Human vs AI game!\")",
+        "detail": "launch_shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "FuzzyProfile",
+        "kind": 6,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "class FuzzyProfile:\n    \"\"\"\n    Holds fuzzy arrays and weights for a particular AI agent.\n    Arrays are 9x9 matrices with values in [0,1].\n    \"\"\"\n    def __init__(self,\n                 center: Matrix,\n                 flanks: Matrix,\n                 promotion_black: Matrix,\n                 king_safety: Matrix,",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "CastlePattern",
+        "kind": 6,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "class CastlePattern:\n    \"\"\"Represents a castle (囲い) pattern in Shogi.\"\"\"\n    def __init__(self, name: str, pieces: List[Tuple[int, int, int]], \n                 king_pos: Tuple[int, int], min_moves: int = 5):\n        self.name = name\n        self.pieces = pieces  # [(piece_type, row, col), ...]\n        self.king_pos = king_pos  # (row, col)\n        self.min_moves = min_moves  # Minimum moves before attempting castle\ndef get_castle_patterns():\n    \"\"\"Define Mino and Yagura castle patterns for both sides.\"\"\"",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "ShogiAI",
+        "kind": 6,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "class ShogiAI:\n    def __init__(self, depth: int = 3, time_limit: float = 5.0, fuzzy: FuzzyProfile = None):\n        self.depth = depth\n        self.time_limit = time_limit\n        self.nodes_evaluated = 0\n        self.transposition_table = {}\n        self.fuzzy = fuzzy or default_fuzzy_profiles()[0]  # default A\n        # Position history for repetition detection\n        self.position_history = {}\n        self.move_count = 0",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "mirror_vertical",
+        "kind": 2,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "def mirror_vertical(mat: Matrix) -> Matrix:\n    \"\"\"Mirror a 9x9 matrix vertically (for opposite side).\"\"\"\n    return [row[:] for row in mat[::-1]]\ndef make_uniform(value: float) -> Matrix:\n    \"\"\"Return 9x9 filled matrix with value.\"\"\"\n    return [[value for _ in range(9)] for _ in range(9)]\nclass FuzzyProfile:\n    \"\"\"\n    Holds fuzzy arrays and weights for a particular AI agent.\n    Arrays are 9x9 matrices with values in [0,1].",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "make_uniform",
+        "kind": 2,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "def make_uniform(value: float) -> Matrix:\n    \"\"\"Return 9x9 filled matrix with value.\"\"\"\n    return [[value for _ in range(9)] for _ in range(9)]\nclass FuzzyProfile:\n    \"\"\"\n    Holds fuzzy arrays and weights for a particular AI agent.\n    Arrays are 9x9 matrices with values in [0,1].\n    \"\"\"\n    def __init__(self,\n                 center: Matrix,",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "default_fuzzy_profiles",
+        "kind": 2,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "def default_fuzzy_profiles():\n    \"\"\"Create two example profiles with different strategic biases.\"\"\"\n    # Center emphasis\n    center = [\n        [0,0,0.1,0.2,0.25,0.2,0.1,0,0],\n        [0,0.1,0.25,0.5,0.6,0.5,0.25,0.1,0],\n        [0.1,0.25,0.6,0.8,1.0,0.8,0.6,0.25,0.1],\n        [0.2,0.5,0.8,1.0,1.0,1.0,0.8,0.5,0.2],\n        [0.25,0.6,1.0,1.0,1.0,1.0,1.0,0.6,0.25],\n        [0.2,0.5,0.8,1.0,1.0,1.0,0.8,0.5,0.2],",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "get_castle_patterns",
+        "kind": 2,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "def get_castle_patterns():\n    \"\"\"Define Mino and Yagura castle patterns for both sides.\"\"\"\n    patterns = {}\n    # Mino Castle for Black (right side)\n    patterns['mino_black'] = CastlePattern(\n        name=\"Mino Castle (美濃囲い)\",\n        pieces=[\n            (shogi.KING, 7, 2),\n            (shogi.SILVER, 7, 3),\n            (shogi.GOLD, 8, 1),",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "Matrix",
+        "kind": 5,
+        "importPath": "shogi_ai",
+        "description": "shogi_ai",
+        "peekOfCode": "Matrix = List[List[float]]\ndef mirror_vertical(mat: Matrix) -> Matrix:\n    \"\"\"Mirror a 9x9 matrix vertically (for opposite side).\"\"\"\n    return [row[:] for row in mat[::-1]]\ndef make_uniform(value: float) -> Matrix:\n    \"\"\"Return 9x9 filled matrix with value.\"\"\"\n    return [[value for _ in range(9)] for _ in range(9)]\nclass FuzzyProfile:\n    \"\"\"\n    Holds fuzzy arrays and weights for a particular AI agent.",
+        "detail": "shogi_ai",
+        "documentation": {}
+    },
+    {
+        "label": "EnhancedShogiGUI",
+        "kind": 6,
+        "importPath": "shogi_gui_enhanced",
+        "description": "shogi_gui_enhanced",
+        "peekOfCode": "class EnhancedShogiGUI:\n    def __init__(self, root):\n        self.root = root\n        self.root.title(\"Enhanced Python Shogi Game\")\n        self.root.geometry(\"1040x820\")\n        self.root.configure(bg='#f0f0f0')\n        # Game state\n        self.board = shogi.Board()\n        self.selected_square = None\n        self.selected_piece = None",
+        "detail": "shogi_gui_enhanced",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "shogi_gui_enhanced",
+        "description": "shogi_gui_enhanced",
+        "peekOfCode": "def main():\n    root = tk.Tk()\n    app = EnhancedShogiGUI(root)\n    root.mainloop()\nif __name__ == \"__main__\":\n    main()",
+        "detail": "shogi_gui_enhanced",
+        "documentation": {}
+    },
+    {
+        "label": "test_ai_basic",
+        "kind": 2,
+        "importPath": "test_ai",
+        "description": "test_ai",
+        "peekOfCode": "def test_ai_basic():\n    \"\"\"Test basic AI functionality\"\"\"\n    print(\"Testing Shogi AI...\")\n    # Create AI instance\n    ai = ShogiAI(depth=2, time_limit=2.0)\n    # Create a new board\n    board = shogi.Board()\n    print(f\"Initial position - Turn: {'Black' if board.turn == shogi.BLACK else 'White'}\")\n    print(f\"Legal moves: {len(list(board.legal_moves))}\")\n    # Test AI move generation",
+        "detail": "test_ai",
+        "documentation": {}
+    },
+    {
+        "label": "test_ai_evaluation",
+        "kind": 2,
+        "importPath": "test_ai",
+        "description": "test_ai",
+        "peekOfCode": "def test_ai_evaluation():\n    \"\"\"Test AI position evaluation\"\"\"\n    print(\"\\nTesting AI position evaluation...\")\n    ai = ShogiAI()\n    board = shogi.Board()\n    # Evaluate initial position\n    score = ai._evaluate_position(board)\n    print(f\"Initial position score: {score}\")\n    # Make a move and evaluate\n    legal_moves = list(board.legal_moves)",
+        "detail": "test_ai",
+        "documentation": {}
+    },
+    {
+        "label": "demonstrate_captured_pieces",
+        "kind": 2,
+        "importPath": "test_captured_pieces",
+        "description": "test_captured_pieces",
+        "peekOfCode": "def demonstrate_captured_pieces():\n    \"\"\"Demonstrate captured pieces functionality\"\"\"\n    print(\"=== Shogi Captured Pieces (Pieces in Hand) Demo ===\\n\")\n    # Create a board with a simple setup for capturing\n    board = shogi.Board()\n    print(\"1. Initial position:\")\n    print(board.kif_str())\n    print()\n    # Make some moves to set up a capture scenario\n    moves = [",
+        "detail": "test_captured_pieces",
+        "documentation": {}
+    },
+    {
+        "label": "test_with_drops",
+        "kind": 2,
+        "importPath": "test_drop_moves",
+        "description": "test_drop_moves",
+        "peekOfCode": "def test_with_drops():\n    \"\"\"Test captured pieces with drop moves\"\"\"\n    print(\"=== Shogi Drop Moves Demo ===\\n\")\n    # Create a position where black has captured pieces\n    # Using a specific SFEN position for testing\n    sfen = \"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"\n    board = shogi.Board(sfen)\n    # Add some pieces to black's hand manually for testing\n    board.add_piece_into_hand(shogi.PAWN, shogi.BLACK, 2)\n    board.add_piece_into_hand(shogi.SILVER, shogi.BLACK, 1)",
+        "detail": "test_drop_moves",
+        "documentation": {}
+    }
+]
