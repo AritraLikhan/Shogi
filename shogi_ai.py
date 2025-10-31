@@ -379,18 +379,29 @@ class ShogiAI:
     def _order_moves(self, board: shogi.Board, moves: List[shogi.Move]) -> List[shogi.Move]:
         """
         Order moves to improve alpha-beta pruning efficiency.
-        Captures and promotions are tried first.
+        Captures and promotions are tried first, then strategic drops.
         """
         def move_priority(move):
             priority = 0
             
-            # Captures have higher priority
+            # Captures have highest priority
             if board.piece_at(move.to_square) is not None:
                 priority += 1000
             
             # Promotions have high priority
             if move.promotion:
                 priority += 500
+            
+            # Drop moves have moderate priority, especially for key pieces
+            if move.drop_piece_type is not None:
+                drop_priority = self.piece_values.get(move.drop_piece_type, 0)
+                priority += drop_priority * 10  # Scale drop priority
+                
+                # Prefer dropping in central squares
+                file = move.to_square % 9
+                rank = move.to_square // 9
+                if 2 <= file <= 6 and 2 <= rank <= 6:  # Central area
+                    priority += 50
             
             # Randomize among moves of same priority
             priority += random.randint(0, 100)
