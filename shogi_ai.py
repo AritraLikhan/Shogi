@@ -215,6 +215,48 @@ class ShogiAI:
         self.positional_values = self._initialize_positional_values()
 
 
+    def evaluate_castle_formation(self, board: shogi.Board, color) -> Tuple[str, float]:
+        """Evaluate which castle to form based on fuzzy king safety values."""
+        if board.move_number < 5:
+            return None, 0.0
+        
+        patterns = ['mino_black', 'yagura_black'] if color == shogi.BLACK else ['mino_white', 'yagura_white']
+        best_castle = None
+        best_score = -999
+        
+        for pattern_name in patterns:
+            pattern = self.castle_patterns[pattern_name]
+            if board.move_number < pattern.min_moves:
+                continue
+            
+            # Calculate score based on king safety fuzzy values
+            king_r, king_c = pattern.king_pos
+            safety_score = self.fuzzy.king_safety[king_r][king_c]
+            
+            # Check piece positions and calculate completion
+            completion = 0
+            total_pieces = len(pattern.pieces)
+            
+            for piece_type, req_r, req_c in pattern.pieces:
+                sq = req_r * 9 + req_c
+                piece = board.piece_at(sq)
+                if piece and piece.piece_type == piece_type and piece.color == color:
+                    completion += 1
+            
+            completion_ratio = completion / total_pieces
+            
+            # Score combines safety and completion
+            score = (safety_score * 50) + (completion_ratio * 100)
+            
+            # Bonus for king safety weight preference
+            score += self.fuzzy.weights["w_kings"] * 30
+            
+            if score > best_score:
+                best_score = score
+                best_castle = pattern_name
+        
+        return best_castle, best_score
+    
     def get_castle_completion(self, board: shogi.Board, pattern_name: str) -> float:
         """Get completion percentage of a castle pattern."""
         if pattern_name not in self.castle_patterns:
