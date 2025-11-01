@@ -104,13 +104,13 @@ def default_fuzzy_profiles():
         [0.1,0.2,0.3,0.4,0.45,0.4,0.3,0.2,0.1],
     ]
 
-    # Profile A: Aggressive Centralist
+    # Profile A: Aggressive Centralist (still aggressive but values king safety more)
     profile_a = FuzzyProfile(center=center,
                              flanks=flanks,
                              promotion_black=promotion_black,
                              king_safety=king_safety,
                              drop_potential_black=drop_black,
-                             weights={"w_center":0.5,"w_flanks":0.05,"w_promo":0.25,"w_kings":0.1,"w_drop":0.1})
+                             weights={"w_center":0.35,"w_flanks":0.1,"w_promo":0.25,"w_kings":0.2,"w_drop":0.1})
 
     # Profile B: Balanced Tactician (more defensive, flank-oriented)
     profile_b = FuzzyProfile(center=center,
@@ -118,7 +118,7 @@ def default_fuzzy_profiles():
                              promotion_black=promotion_black,
                              king_safety=king_safety,
                              drop_potential_black=drop_black,
-                             weights={"w_center":0.2,"w_flanks":0.3,"w_promo":0.15,"w_kings":0.25,"w_drop":0.1})
+                             weights={"w_center":0.15,"w_flanks":0.3,"w_promo":0.15,"w_kings":0.3,"w_drop":0.1})
     return profile_a, profile_b
 
 class ShogiAI:
@@ -144,6 +144,333 @@ class ShogiAI:
         # Basic positional tables retained for piece-type flavor
         self.positional_values = self._initialize_positional_values()
 
+<<<<<<< Updated upstream
+=======
+    def _penalize_king_center_moves(self, board: shogi.Board, move: shogi.Move) -> float:
+        """Apply penalty for moving king toward center early in game"""
+        if move.from_square is None:
+            return 0.0
+            
+        moving_piece = board.piece_at(move.from_square)
+        if not moving_piece or moving_piece.piece_type != shogi.KING:
+            return 0.0
+        
+        # Apply penalty throughout early-mid game
+        if board.move_number > 25:
+            return 0.0
+            
+        to_r = move.to_square // 9
+        to_c = move.to_square % 9
+        
+        # Very heavy penalty for moving king to center (files 3-5, ranks 3-5)
+        if 3 <= to_r <= 5 and 3 <= to_c <= 5:
+            return -500  # Increased from -100
+        
+        # Heavy penalty for moving close to center (files 2-6, ranks 2-6)
+        if 2 <= to_r <= 6 and 2 <= to_c <= 6:
+            return -200  # Penalty for moving near center
+        
+        # Penalty for moving closer to center
+        from_r = move.from_square // 9
+        from_c = move.from_square % 9
+        
+        center_r, center_c = 4, 4
+        old_distance = abs(from_r - center_r) + abs(from_c - center_c)
+        new_distance = abs(to_r - center_r) + abs(to_c - center_c)
+        
+        if new_distance < old_distance:
+            return -100  # Increased from -30
+            
+        return 0.0
+
+    # Fuzzy membership functions for castling decisions
+    def _fuzzy_highly_exposed(self, exposure: float) -> float:
+        """Membership for Highly Exposed: high when exposure >= 0.7"""
+        if exposure >= 0.7:
+            return 1.0
+        elif exposure <= 0.3:
+            return 0.0
+        else:
+            return (exposure - 0.3) / 0.4
+
+    def _fuzzy_moderately_exposed(self, exposure: float) -> float:
+        """Membership for Moderately Exposed: peak at 0.5"""
+        if exposure <= 0.3 or exposure >= 0.7:
+            return 0.0
+        elif exposure == 0.5:
+            return 1.0
+        elif exposure < 0.5:
+            return (exposure - 0.3) / 0.2
+        else:
+            return (0.7 - exposure) / 0.2
+
+    def _fuzzy_safe(self, exposure: float) -> float:
+        """Membership for Safe: high when exposure <= 0.3"""
+        if exposure <= 0.3:
+            return 1.0
+        elif exposure >= 0.7:
+            return 0.0
+        else:
+            return (0.7 - exposure) / 0.4
+
+    def _fuzzy_well_supported(self, support: float) -> float:
+        """Membership for Well Supported: high when support >= 0.8"""
+        if support >= 0.8:
+            return 1.0
+        elif support <= 0.5:
+            return 0.0
+        else:
+            return (support - 0.5) / 0.3
+
+    def _fuzzy_moderately_supported(self, support: float) -> float:
+        """Membership for Moderately Supported: peak at 0.6"""
+        if support <= 0.4 or support >= 0.8:
+            return 0.0
+        elif support == 0.6:
+            return 1.0
+        elif support < 0.6:
+            return (support - 0.4) / 0.2
+        else:
+            return (0.8 - support) / 0.2
+
+    def _fuzzy_poorly_supported(self, support: float) -> float:
+        """Membership for Poorly Supported: high when support <= 0.4"""
+        if support <= 0.4:
+            return 1.0
+        elif support >= 0.7:
+            return 0.0
+        else:
+            return (0.7 - support) / 0.3
+
+    def _fuzzy_high_threat(self, threat: float) -> float:
+        """Membership for High Threat: high when threat >= 0.7"""
+        if threat >= 0.7:
+            return 1.0
+        elif threat <= 0.3:
+            return 0.0
+        else:
+            return (threat - 0.3) / 0.4
+
+    def _fuzzy_moderate_threat(self, threat: float) -> float:
+        """Membership for Moderate Threat: peak at 0.5"""
+        if threat <= 0.3 or threat >= 0.7:
+            return 0.0
+        elif threat == 0.5:
+            return 1.0
+        elif threat < 0.5:
+            return (threat - 0.3) / 0.2
+        else:
+            return (0.7 - threat) / 0.2
+
+    def _fuzzy_low_threat(self, threat: float) -> float:
+        """Membership for Low Threat: high when threat <= 0.3"""
+        if threat <= 0.3:
+            return 1.0
+        elif threat >= 0.7:
+            return 0.0
+        else:
+            return (0.7 - threat) / 0.4
+
+    def _calculate_king_exposure(self, board: shogi.Board, king_r: int, king_c: int, color: int) -> float:
+        """Calculate how exposed the king is (0-1 scale, higher = more exposed)"""
+        exposure = 0.0
+        
+        # Check adjacent squares for piece protection
+        protected_squares = 0
+        total_adjacent = 0
+        
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                if dr == 0 and dc == 0:
+                    continue
+                nr, nc = king_r + dr, king_c + dc
+                if 0 <= nr < 9 and 0 <= nc < 9:
+                    total_adjacent += 1
+                    sq = nr * 9 + nc
+                    piece = board.piece_at(sq)
+                    if piece and piece.color == color:
+                        protected_squares += 1
+        
+        # Exposure based on lack of friendly pieces nearby
+        if total_adjacent > 0:
+            exposure += (1.0 - protected_squares / total_adjacent) * 0.5
+        
+        # Check for enemy attacks on king area
+        enemy_attacks = 0
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece and piece.color != color:
+                # Check if this piece can attack king's area
+                pr, pc = sq // 9, sq % 9
+                distance = max(abs(pr - king_r), abs(pc - king_c))
+                if distance <= 2:  # Within 2 squares
+                    enemy_attacks += 1
+        
+        exposure += min(0.5, enemy_attacks / 8.0)  # Normalize to max 0.5
+        
+        # Penalty for king being in center (files 3-5, ranks 3-5)
+        if 3 <= king_r <= 5 and 3 <= king_c <= 5:
+            exposure += 0.3
+        
+        return min(1.0, exposure)
+        """Calculate opponent threat level near the king position (0-1 scale)"""
+        opponent_color = shogi.WHITE if color == shogi.BLACK else shogi.BLACK
+        threat_count = 0
+        max_threat = 5  # Normalize to max 5 threatening pieces
+        
+        # Check squares around king (3x3 area)
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                nr, nc = king_r + dr, king_c + dc
+                if 0 <= nr < 9 and 0 <= nc < 9:
+                    sq = nr * 9 + nc
+                    piece = board.piece_at(sq)
+                    if piece and piece.color == opponent_color:
+                        # Weight by piece value (higher value = higher threat)
+                        threat_count += min(1, self.piece_values.get(piece.piece_type, 0) / 10)
+        
+        # Also check for long-range threats (rooks, bishops, lances)
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece and piece.color == opponent_color and piece.piece_type in [shogi.ROOK, shogi.BISHOP, shogi.LANCE]:
+                # Simplified: if piece can potentially attack king area
+                pr, pc = sq // 9, sq % 9
+                distance = abs(pr - king_r) + abs(pc - king_c)
+                if distance <= 4:  # Within attacking range
+                    threat_count += 0.5
+        
+    def _calculate_threat_level(self, board: shogi.Board, king_r: int, king_c: int, color: int) -> float:
+        """Calculate opponent threat level near the king position (0-1 scale)"""
+        opponent_color = shogi.WHITE if color == shogi.BLACK else shogi.BLACK
+        threat_count = 0
+        max_threat = 5  # Normalize to max 5 threatening pieces
+        
+        # Check squares around king (3x3 area)
+        for dr in [-1, 0, 1]:
+            for dc in [-1, 0, 1]:
+                nr, nc = king_r + dr, king_c + dc
+                if 0 <= nr < 9 and 0 <= nc < 9:
+                    sq = nr * 9 + nc
+                    piece = board.piece_at(sq)
+                    if piece and piece.color == opponent_color:
+                        # Weight by piece value (higher value = higher threat)
+                        threat_count += min(1, self.piece_values.get(piece.piece_type, 0) / 10)
+        
+        # Also check for long-range threats (rooks, bishops, lances)
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece and piece.color == opponent_color and piece.piece_type in [shogi.ROOK, shogi.BISHOP, shogi.LANCE]:
+                # Simplified: if piece can potentially attack king area
+                pr, pc = sq // 9, sq % 9
+                distance = abs(pr - king_r) + abs(pc - king_c)
+                if distance <= 4:  # Within attacking range
+                    threat_count += 0.5
+        
+        return min(1.0, threat_count / max_threat)
+
+
+    def evaluate_castle_formation(self, board: shogi.Board, color) -> Tuple[str, float]:
+        """Evaluate which castle to form using fuzzy logic rules."""
+        if board.move_number < 5:
+            return None, 0.0
+        
+        patterns = ['mino_black', 'yagura_black'] if color == shogi.BLACK else ['mino_white', 'yagura_white']
+        best_castle = None
+        best_score = -999
+        
+        # Find current king position
+        king_sq = None
+        for sq in range(81):
+            piece = board.piece_at(sq)
+            if piece and piece.piece_type == shogi.KING and piece.color == color:
+                king_sq = sq
+                break
+        
+        if king_sq is None:
+            return None, 0.0
+            
+        current_king_r = king_sq // 9
+        current_king_c = king_sq % 9
+        
+        for pattern_name in patterns:
+            pattern = self.castle_patterns[pattern_name]
+            if board.move_number < pattern.min_moves:
+                continue
+            
+            king_r, king_c = pattern.king_pos
+            
+            # Calculate fuzzy metrics using current king position for exposure
+            exposure = self._calculate_king_exposure(board, current_king_r, current_king_c, color)
+            
+            # Piece support (completion ratio)
+            completion = 0
+            for piece_type, req_r, req_c in pattern.pieces:
+                sq = req_r * 9 + req_c
+                piece = board.piece_at(sq)
+                if piece and piece.piece_type == piece_type and piece.color == color:
+                    completion += 1
+            support = completion / len(pattern.pieces)
+            
+            # Opponent threat level around target castle position
+            threat = self._calculate_threat_level(board, king_r, king_c, color)
+            
+            # Fuzzy rule evaluation for each castle type
+            fuzzy_score = 0.0
+            if 'mino' in pattern_name:
+                # Mino: Moderately Exposed AND Well Supported AND Low Threat
+                moderate_exp = self._fuzzy_moderately_exposed(exposure)
+                well_supp = self._fuzzy_well_supported(support)
+                low_threat = self._fuzzy_low_threat(threat)
+                # Also allow if highly exposed (urgent need for castle)
+                high_exp = self._fuzzy_highly_exposed(exposure)
+                fuzzy_score = max(
+                    min(moderate_exp, well_supp, low_threat),
+                    min(high_exp, well_supp) * 0.8  # Slightly lower priority for urgent castling
+                )
+            elif 'yagura' in pattern_name:
+                # Yagura: Moderately Exposed AND Moderately Supported
+                moderate_exp = self._fuzzy_moderately_exposed(exposure)
+                moderate_supp = self._fuzzy_moderately_supported(support)
+                # Also allow if highly exposed
+                high_exp = self._fuzzy_highly_exposed(exposure)
+                fuzzy_score = max(
+                    min(moderate_exp, moderate_supp),
+                    min(high_exp, moderate_supp) * 0.8
+                )
+            
+            # Combine fuzzy score with completion bonus
+            total_score = (fuzzy_score * 100) + (support * 50)
+            
+            # Early game bonus to encourage castle formation
+            if board.move_number <= 15:
+                total_score += 20
+            
+            # Only consider if fuzzy conditions are met (lowered threshold for earlier activation)
+            if fuzzy_score > 0.2 and total_score > best_score:
+                best_score = total_score
+                best_castle = pattern_name
+        
+        return best_castle, best_score
+    
+    def get_castle_completion(self, board: shogi.Board, pattern_name: str) -> float:
+        """Get completion percentage of a castle pattern."""
+        if pattern_name not in self.castle_patterns:
+            return 0.0
+        
+        pattern = self.castle_patterns[pattern_name]
+        color = shogi.BLACK if 'black' in pattern_name else shogi.WHITE
+        
+        completion = 0
+        for piece_type, req_r, req_c in pattern.pieces:
+            sq = req_r * 9 + req_c
+            piece = board.piece_at(sq)
+            if piece and piece.piece_type == piece_type and piece.color == color:
+                completion += 1
+        
+        return completion / len(pattern.pieces)
+
+
+>>>>>>> Stashed changes
     def set_fuzzy_profile(self, fuzzy: FuzzyProfile):
         self.fuzzy = fuzzy
 
@@ -182,7 +509,17 @@ class ShogiAI:
             [3,3,3,3,6,3,3,3,3],  # Enhanced center value
             [4]*9,[3]*9,[2]*9,[2]*9,
         ]
-        tables[shogi.KING] = [[0]*9 for _ in range(9)]
+        tables[shogi.KING] = [
+            [-50, -40, -30, -20, -100, -20, -30, -40, -50],  # Rank 0 - heavy center penalty
+            [-30, -20, -10, 0, -50, 0, -10, -20, -30],        # Rank 1
+            [-20, -10, 0, 5, -30, 5, 0, -10, -20],            # Rank 2
+            [-10, 0, 5, 10, -20, 10, 5, 0, -10],              # Rank 3
+            [-50, -30, -20, -10, -100, -10, -20, -30, -50],   # Rank 4 - center row, very bad
+            [-10, 0, 5, 10, -20, 10, 5, 0, -10],              # Rank 5
+            [-20, -10, 0, 5, -30, 5, 0, -10, -20],            # Rank 6
+            [-30, -20, -10, 0, -50, 0, -10, -20, -30],        # Rank 7
+            [10, 20, 30, 20, 0, 20, 30, 20, 10],              # Rank 8 - back rank, good for king
+        ]
         return tables
 
     def get_best_move(self, board: shogi.Board) -> Optional[shogi.Move]:
@@ -323,6 +660,19 @@ class ShogiAI:
             fuzzy_bonus = (w["w_center"]*f_center + w["w_flanks"]*f_flank +
                            w["w_promo"]*f_promo + w["w_kings"]*f_king +
                            w["w_drop"]*f_drop)
+
+            # Special handling for king - heavily penalize center positions
+            if piece.piece_type == shogi.KING:
+                # Strong penalty for king in center (files 3-5, ranks 3-5)
+                if 3 <= r <= 5 and 3 <= c <= 5:
+                    fuzzy_bonus -= 5.0  # Heavy penalty
+                # Moderate penalty for king in near-center (files 2-6, ranks 2-6)
+                elif 2 <= r <= 6 and 2 <= c <= 6:
+                    fuzzy_bonus -= 2.0
+                
+                # Override center bonus for king
+                # Use only king safety, ignore center control for king
+                fuzzy_bonus = w["w_kings"]*f_king - (1.0 - f_king) * 3.0
 
             val = base + pos + base * 0.1 * fuzzy_bonus  # Increased fuzzy influence
             if piece.color == shogi.BLACK:
@@ -471,6 +821,10 @@ class ShogiAI:
         def priority(mv):
             p = 0
             
+            # King center penalty
+            king_penalty = self._penalize_king_center_moves(board, mv)
+            p += king_penalty
+            
             # Heavy bonus for captures
             captured_piece = board.piece_at(mv.to_square)
             if captured_piece is not None:
@@ -503,10 +857,12 @@ class ShogiAI:
                 elif board.turn == shogi.WHITE and to_r > from_r:  # Moving forward for white
                     p += 50 + (to_r - from_r) * 10
             
-            # Bonus for center moves
+            # Bonus for center moves (but not for king)
             to_f = mv.to_square % 9
             to_r = mv.to_square // 9
-            if 3 <= to_f <= 5 and 3 <= to_r <= 5:
+            moving_piece = board.piece_at(mv.from_square) if mv.from_square else None
+            if (3 <= to_f <= 5 and 3 <= to_r <= 5 and 
+                (not moving_piece or moving_piece.piece_type != shogi.KING)):
                 p += 30
             
             # Bonus for check moves
