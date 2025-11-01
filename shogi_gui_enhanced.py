@@ -17,7 +17,7 @@ class EnhancedShogiGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Enhanced Python Shogi Game")
-        self.root.geometry("1040x820")
+        self.root.geometry("1600x820")
         self.root.configure(bg='#f0f0f0')
 
         # Game state
@@ -72,9 +72,9 @@ class EnhancedShogiGUI:
         main_container = ttk.Frame(self.root)
         main_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Left panel (board)
+        # Left panel (board) - made slightly narrower
         left_panel = ttk.Frame(main_container)
-        left_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        left_panel.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0,15))
 
         info_frame = ttk.Frame(left_panel)
         info_frame.pack(fill=tk.X, pady=(0,10))
@@ -111,13 +111,22 @@ class EnhancedShogiGUI:
                 row_btns.append(btn)
             self.square_buttons.append(row_btns)
 
-        # Right panel
-        right_panel = ttk.Frame(main_container, width=320)
-        right_panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(20,0))
+        # Right panel - increased width for two columns
+        right_panel = ttk.Frame(main_container, width=720)
+        right_panel.pack(side=tk.RIGHT, fill=tk.Y, padx=(15,0))
         right_panel.pack_propagate(False)
 
-        # Mode controls
-        mode_frame = ttk.LabelFrame(right_panel, text="Game Mode", padding=10)
+        # Create two columns in the right panel
+        left_column = ttk.Frame(right_panel, width=360)
+        left_column.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0,5))
+        left_column.pack_propagate(False)
+        
+        right_column = ttk.Frame(right_panel, width=360)
+        right_column.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=(5,0))
+        right_column.pack_propagate(False)
+
+        # LEFT COLUMN - Mode controls
+        mode_frame = ttk.LabelFrame(left_column, text="Game Mode", padding=10)
         mode_frame.pack(fill=tk.X, pady=(0,10))
         self.mode_var = tk.StringVar(value="human_vs_ai")
         ttk.Radiobutton(mode_frame, text="Human vs AI", variable=self.mode_var, value="human_vs_ai",
@@ -128,7 +137,7 @@ class EnhancedShogiGUI:
                         command=self.change_game_mode).pack(anchor=tk.W)
 
         # Difficulty for both AIs
-        ai_frame = ttk.LabelFrame(right_panel, text="AI Difficulty", padding=10)
+        ai_frame = ttk.LabelFrame(left_column, text="AI Difficulty", padding=10)
         ai_frame.pack(fill=tk.X, pady=(0,10))
         self.difficulty_var = tk.StringVar(value="medium")
         ttk.Label(ai_frame, text="Level:").pack(side=tk.LEFT)
@@ -138,25 +147,68 @@ class EnhancedShogiGUI:
         difficulty_combo.bind("<<ComboboxSelected>>", self.change_ai_difficulty)
 
         # AI vs AI controls
-        duel_frame = ttk.LabelFrame(right_panel, text="AI vs AI Controls", padding=10)
+        duel_frame = ttk.LabelFrame(left_column, text="AI vs AI Controls", padding=10)
         duel_frame.pack(fill=tk.X, pady=(0,10))
         ttk.Button(duel_frame, text="▶ Start", command=self.start_ai_vs_ai).pack(side=tk.LEFT, padx=2)
         ttk.Button(duel_frame, text="⏸ Pause", command=self.pause_ai_vs_ai).pack(side=tk.LEFT, padx=2)
-        ttk.Label(duel_frame, text="Delay (ms):").pack(side=tk.LEFT, padx=(10,2))
+        ttk.Label(duel_frame, text="Delay (ms):").pack(side=tk.LEFT, padx=(8,2))
         self.delay_var = tk.StringVar(value=str(self.ai_delay_ms))
         ttk.Entry(duel_frame, textvariable=self.delay_var, width=6).pack(side=tk.LEFT)
 
         # Game controls
-        controls_frame = ttk.LabelFrame(right_panel, text="Game Controls", padding=10)
+        controls_frame = ttk.LabelFrame(left_column, text="Game Controls", padding=10)
         controls_frame.pack(fill=tk.X, pady=(0,10))
         ttk.Button(controls_frame, text="🔄 New Game", command=self.new_game).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="↶ Undo Move", command=self.undo_move).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📋 Show Legal Moves", command=self.show_legal_moves).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📄 Show KIF Board", command=self.show_kif_board).pack(fill=tk.X, pady=2)
+<<<<<<< Updated upstream
         ttk.Button(controls_frame, text="🌐 Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
+=======
+        ttk.Button(controls_frame, text="� Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
+
+        # Manual input
+        input_frame = ttk.LabelFrame(left_column, text="Manual Move Input", padding=10)
+        input_frame.pack(fill=tk.X, pady=(0,10))
+        ttk.Label(input_frame, text="USI Format (e.g., 7g7f):").pack(anchor=tk.W)
+        entry_frame = ttk.Frame(input_frame)
+        entry_frame.pack(fill=tk.X, pady=(5,0))
+        self.move_entry = ttk.Entry(entry_frame, width=12, font=('Courier',10))
+        self.move_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
+        self.move_entry.bind('<Return>', self.on_move_enter)
+        ttk.Button(entry_frame, text="Play", command=self.play_manual_move).pack(side=tk.RIGHT)
+
+        # RIGHT COLUMN - Castle Status Section (dedicated display)
+        castle_frame = ttk.LabelFrame(right_column, text="Castle Formation Status (囲い)", padding=10)
+        castle_frame.pack(fill=tk.X, pady=(0,10))
+        
+        # Black castles subsection
+        black_castle_frame = ttk.LabelFrame(castle_frame, text="Black Player (先手)", padding=5)
+        black_castle_frame.pack(fill=tk.X, pady=(0,5))
+        
+        self.black_mino_label = ttk.Label(black_castle_frame, text="Mino Castle: 0.0% complete", 
+                                         font=('Arial', 9))
+        self.black_mino_label.pack(anchor=tk.W)
+        
+        self.black_yagura_label = ttk.Label(black_castle_frame, text="Yagura Castle: 0.0% complete", 
+                                           font=('Arial', 9))
+        self.black_yagura_label.pack(anchor=tk.W)
+        
+        # White castles subsection
+        white_castle_frame = ttk.LabelFrame(castle_frame, text="White Player (後手)", padding=5)
+        white_castle_frame.pack(fill=tk.X, pady=(5,0))
+        
+        self.white_mino_label = ttk.Label(white_castle_frame, text="Mino Castle: 0.0% complete", 
+                                         font=('Arial', 9))
+        self.white_mino_label.pack(anchor=tk.W)
+        
+        self.white_yagura_label = ttk.Label(white_castle_frame, text="Yagura Castle: 0.0% complete", 
+                                           font=('Arial', 9))
+        self.white_yagura_label.pack(anchor=tk.W)
+>>>>>>> Stashed changes
 
         # Pieces in hand
-        pieces_frame = ttk.LabelFrame(right_panel, text="Pieces in Hand (持駒)", padding=10)
+        pieces_frame = ttk.LabelFrame(right_column, text="Pieces in Hand (持駒)", padding=10)
         pieces_frame.pack(fill=tk.X, pady=(0,10))
         
         # Black player's pieces frame (darker theme)
@@ -173,21 +225,10 @@ class EnhancedShogiGUI:
         self.white_pieces_frame = tk.Frame(pieces_frame, bg='#e8e8e8', relief=tk.SUNKEN, bd=3, padx=5, pady=5)
         self.white_pieces_frame.pack(fill=tk.X, pady=2)
 
-        # Manual input
-        input_frame = ttk.LabelFrame(right_panel, text="Manual Move Input", padding=10)
-        input_frame.pack(fill=tk.X, pady=(0,10))
-        ttk.Label(input_frame, text="USI Format (e.g., 7g7f or P*5e):").pack(anchor=tk.W)
-        entry_frame = ttk.Frame(input_frame)
-        entry_frame.pack(fill=tk.X, pady=(5,0))
-        self.move_entry = ttk.Entry(entry_frame, width=12, font=('Courier',10))
-        self.move_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0,5))
-        self.move_entry.bind('<Return>', self.on_move_enter)
-        ttk.Button(entry_frame, text="Play", command=self.play_manual_move).pack(side=tk.RIGHT)
-
-        # Status
+        # Status (spans both columns at bottom)
         status_frame = ttk.LabelFrame(right_panel, text="Game Status", padding=10)
-        status_frame.pack(fill=tk.BOTH, expand=True)
-        self.status_text = tk.Text(status_frame, width=30, height=15, font=('Courier',9),
+        status_frame.pack(fill=tk.BOTH, expand=True, pady=(10,0))
+        self.status_text = tk.Text(status_frame, width=90, height=10, font=('Courier',9),
                                    wrap=tk.WORD, bg='#f8f8f8')
         self.status_text.pack(fill=tk.BOTH, expand=True)
         scrollbar = ttk.Scrollbar(status_frame, orient=tk.VERTICAL, command=self.status_text.yview)
@@ -195,11 +236,9 @@ class EnhancedShogiGUI:
         self.status_text.config(yscrollcommand=scrollbar.set)
 
         instructions = ttk.LabelFrame(right_panel, text="How to Play", padding=10)
-        instructions.pack(fill=tk.X, pady=(10,0))
-        instruction_text = """Click pieces to select, then click destination.
-Drops: click a hand piece then a valid square (highlighted).
-Manual input: USI like '7g7f' or 'P*5e'.
-Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
+        instructions.pack(fill=tk.X, pady=(5,0))
+        instruction_text = """Click pieces → destination. Drops: hand piece → square.
+Manual: USI like '7g7f'. AI vs AI shows different strategies."""
         ttk.Label(instructions, text=instruction_text, font=('Arial',8), justify=tk.LEFT).pack()
 
     # --- Display helpers and board conversions (same as previous version) ---
@@ -247,6 +286,7 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
                     btn.config(relief=tk.RAISED, bd=1)
         self.update_status()
         self.update_pieces_in_hand()
+        self.update_castle_status()
 
     def get_square_from_coords(self, row, col):
         file = col; rank = row; return rank*9 + file
@@ -305,6 +345,12 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
     def _push_and_continue(self, move):
         self.board.push(move); self.move_history.append(move); self.log_move(move)
         self.clear_selection(); self.update_display()
+        
+        # Check for checkmate after human move
+        if self.board.is_checkmate():
+            self.show_checkmate_dialog()
+            return
+            
         if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color:
             self.make_ai_move()
 
@@ -450,6 +496,12 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
         if mv in self.board.legal_moves:
             self.board.push(mv); self.move_history.append(mv); self.log_move(mv)
             self.clear_selection(); self.update_display()
+            
+            # Check for checkmate after drop move
+            if self.board.is_checkmate():
+                self.show_checkmate_dialog()
+                return True
+                
             if self.game_mode == "human_vs_ai" and self.board.turn != self.user_color and not self.board.is_game_over():
                 self.root.after(500, self.make_ai_move)
             return True
@@ -496,6 +548,10 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
     def execute_ai_move(self, move):
         self.board.push(move); self.move_history.append(move); self.log_move(move)
         self.ai_thinking = False; self.ai_thinking_label.config(text=""); self.clear_selection(); self.update_display()
+        
+        # Check for checkmate after the move
+        if self.board.is_checkmate():
+            self.show_checkmate_dialog()
 
     def ai_move_failed(self):
         self.ai_thinking = False; self.ai_thinking_label.config(text=""); self.log_message("❌ AI could not find a valid move"); self.update_display()
@@ -532,6 +588,74 @@ Modes: Human vs AI, Human vs Human, AI vs AI (different heuristics)."""
                 self.root.after(0, self.ai_move_error, str(e))
         threading.Thread(target=run, daemon=True).start()
 
+<<<<<<< Updated upstream
+=======
+    def update_castle_status(self):
+        """Update the castle formation status display."""
+        # Update Black's castle status
+        try:
+            black_mino_completion = self.ai_black.get_castle_completion(self.board, 'mino_black')
+            black_yagura_completion = self.ai_black.get_castle_completion(self.board, 'yagura_black')
+            
+            self.black_mino_label.config(text=f"Mino Castle: {black_mino_completion*100:.1f}% complete")
+            self.black_yagura_label.config(text=f"Yagura Castle: {black_yagura_completion*100:.1f}% complete")
+            
+        except Exception:
+            self.black_mino_label.config(text="Mino Castle: N/A")
+            self.black_yagura_label.config(text="Yagura Castle: N/A")
+        
+        # Update White's castle status
+        try:
+            white_mino_completion = self.ai_white.get_castle_completion(self.board, 'mino_white')
+            white_yagura_completion = self.ai_white.get_castle_completion(self.board, 'yagura_white')
+            
+            self.white_mino_label.config(text=f"Mino Castle: {white_mino_completion*100:.1f}% complete")
+            self.white_yagura_label.config(text=f"Yagura Castle: {white_yagura_completion*100:.1f}% complete")
+            
+        except Exception:
+            self.white_mino_label.config(text="Mino Castle: N/A")
+            self.white_yagura_label.config(text="Yagura Castle: N/A")
+
+    def show_checkmate_dialog(self):
+        """Show checkmate dialog with winner information."""
+        if not self.board.is_checkmate():
+            return
+            
+        # Determine the winner (opposite of current turn since current player is checkmated)
+        winner_color = shogi.WHITE if self.board.turn == shogi.BLACK else shogi.BLACK
+        winner_name = "White (後手)" if winner_color == shogi.WHITE else "Black (先手)"
+        
+        # Get AI agent names for AI vs AI mode
+        if self.game_mode == "ai_vs_ai":
+            if winner_color == shogi.BLACK:
+                winner_agent = "Aggressive Centralist (Black)"
+            else:
+                winner_agent = "Balanced Tactician (White)"
+            title = "🏆 Checkmate! AI Victory!"
+            message = f"Checkmate!\n\n{winner_agent} wins!\n\nGame over in {self.board.move_number} moves."
+        elif self.game_mode == "human_vs_ai":
+            if winner_color == self.user_color:
+                title = "🎉 Checkmate! You Win!"
+                message = f"Congratulations!\n\nYou ({winner_name}) have achieved checkmate!\n\nGame over in {self.board.move_number} moves."
+            else:
+                ai_name = "Aggressive Centralist" if winner_color == shogi.BLACK else "Balanced Tactician"
+                title = "🤖 Checkmate! AI Wins!"
+                message = f"Checkmate!\n\n{ai_name} AI ({winner_name}) wins!\n\nGame over in {self.board.move_number} moves."
+        else:  # human vs human
+            title = "🏆 Checkmate!"
+            message = f"Checkmate!\n\n{winner_name} wins!\n\nGame over in {self.board.move_number} moves."
+        
+        # Stop AI vs AI if running
+        if self.game_mode == "ai_vs_ai":
+            self.ai_vs_ai_running = False
+            
+        # Show dialog
+        result = messagebox.showinfo(title, message)
+        
+        # Log the result
+        self.log_message(f"🏆 GAME OVER - {winner_name} wins by checkmate!")
+
+>>>>>>> Stashed changes
 def main():
     root = tk.Tk()
     app = EnhancedShogiGUI(root)
