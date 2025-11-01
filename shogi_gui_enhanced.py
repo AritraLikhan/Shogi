@@ -162,10 +162,8 @@ class EnhancedShogiGUI:
         ttk.Button(controls_frame, text="↶ Undo Move", command=self.undo_move).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📋 Show Legal Moves", command=self.show_legal_moves).pack(fill=tk.X, pady=2)
         ttk.Button(controls_frame, text="📄 Show KIF Board", command=self.show_kif_board).pack(fill=tk.X, pady=2)
-<<<<<<< Updated upstream
+
         ttk.Button(controls_frame, text="🌐 Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
-=======
-        ttk.Button(controls_frame, text="� Toggle Language", command=self.toggle_language).pack(fill=tk.X, pady=2)
 
         # Manual input
         input_frame = ttk.LabelFrame(left_column, text="Manual Move Input", padding=10)
@@ -205,7 +203,6 @@ class EnhancedShogiGUI:
         self.white_yagura_label = ttk.Label(white_castle_frame, text="Yagura Castle: 0.0% complete", 
                                            font=('Arial', 9))
         self.white_yagura_label.pack(anchor=tk.W)
->>>>>>> Stashed changes
 
         # Pieces in hand
         pieces_frame = ttk.LabelFrame(right_column, text="Pieces in Hand (持駒)", padding=10)
@@ -588,8 +585,6 @@ Manual: USI like '7g7f'. AI vs AI shows different strategies."""
                 self.root.after(0, self.ai_move_error, str(e))
         threading.Thread(target=run, daemon=True).start()
 
-<<<<<<< Updated upstream
-=======
     def update_castle_status(self):
         """Update the castle formation status display."""
         # Update Black's castle status
@@ -655,7 +650,6 @@ Manual: USI like '7g7f'. AI vs AI shows different strategies."""
         # Log the result
         self.log_message(f"🏆 GAME OVER - {winner_name} wins by checkmate!")
 
->>>>>>> Stashed changes
 def main():
     root = tk.Tk()
     app = EnhancedShogiGUI(root)

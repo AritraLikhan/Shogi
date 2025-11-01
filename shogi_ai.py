@@ -144,8 +144,6 @@ class ShogiAI:
         # Basic positional tables retained for piece-type flavor
         self.positional_values = self._initialize_positional_values()
 
-<<<<<<< Updated upstream
-=======
     def _penalize_king_center_moves(self, board: shogi.Board, move: shogi.Move) -> float:
         """Apply penalty for moving king toward center early in game"""
         if move.from_square is None:
@@ -469,8 +467,6 @@ class ShogiAI:
         
         return completion / len(pattern.pieces)
 
-
->>>>>>> Stashed changes
     def set_fuzzy_profile(self, fuzzy: FuzzyProfile):
         self.fuzzy = fuzzy
 
